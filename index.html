@@ -152,8 +152,6 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
       <select id="fStatus"><option value="Semua">Semua</option><option>Lanjutan</option><option>Murni</option></select></div>
     <div class="f"><label for="fUnit">Unit / Bidang</label><select id="fUnit"></select></div>
     <div class="f"><label for="fBulan">Realisasi s.d.</label><select id="fBulan"></select></div>
-    <div class="f"><label>&nbsp;</label><button class="btn" id="btnLoad" type="button" title="Ambil data terbaru dari Google Sheet">↻ Muat ulang</button></div>
-    <div class="f"><label>&nbsp;</label><a class="btn" id="btnSheet" href="https://docs.google.com/spreadsheets/d/1iIkZRl2L1OThEM1NzYZB9yy2KcIzwoqrtXRcWyCVPXg/edit" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block" title="Buka Google Sheet data dashboard">▦ Google Sheet</a></div>
     <div class="f"><label>&nbsp;</label><button class="btn" id="btnTheme" type="button" aria-label="Ganti tema terang/gelap">◐ Tema</button></div>
     <div class="stamp" id="stamp"></div>
   </div>
@@ -522,16 +520,16 @@ function jsonp(url,key){
   });
 }
 function loadData(){
-  const L=$('loading'); L.style.display='grid'; L.innerHTML='Memuat data dari Google Sheet…'; $('btnLoad').disabled=true;
-  const ok=D=>{DATA=D; S.bulan=+D.meta.bulan||S.bulan; S.komBln=null; fillControls(); renderAll(); L.style.display='none'; $('btnLoad').disabled=false;
+  const L=$('loading'); L.style.display='grid'; L.innerHTML='Memuat data dari Google Sheet…';
+  const ok=D=>{DATA=D; S.bulan=+D.meta.bulan||S.bulan; S.komBln=null; fillControls(); renderAll(); L.style.display='none';
     const w=(D.meta.peringatan||[]); $('warn').style.display=w.length?'block':'none'; $('warn').textContent=w.join(' · ')};
-  const fail=e=>{L.innerHTML='<div class="card" style="max-width:440px;text-align:left"><b>Gagal memuat data</b><div style="margin:6px 0 12px;color:var(--text-2)">'+esc(e&&e.message||e)+'</div>'+'</div>';$('btnLoad').disabled=false};
+  const fail=e=>{L.innerHTML='<div class="card" style="max-width:440px;text-align:left"><b>Gagal memuat data</b><div style="margin:6px 0 12px;color:var(--text-2)">'+esc(e&&e.message||e)+'</div>'+'</div>'};
   if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getData(); return; }
   if(window.__TEST_DATA__){ ok(window.__TEST_DATA__); return; }
   const c=conn(); if(!c.url||!c.key){ if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); return; } fail('URL Web App belum ditanam di dashboard.'); return; }
   jsonp(c.url,c.key).then(ok,e=>{ if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); $('warn').style.display='block'; $('warn').textContent='Tidak dapat terhubung ke Google Sheet ('+(e&&e.message||e)+') — menampilkan data tersimpan.'; } else fail(e); });
 }
-$('btnLoad').onclick=loadData;
+
 function toast(msg){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',right:'16px',bottom:'16px',background:css('--ref'),color:css('--surface'),padding:'10px 14px',borderRadius:'8px',fontSize:'12px',zIndex:60,maxWidth:'360px'});document.body.appendChild(t);setTimeout(()=>t.remove(),4000)}
 
 loadData();
