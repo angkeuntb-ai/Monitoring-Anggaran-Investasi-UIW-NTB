@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monitoring Anggaran Investasi UIW NTB</title>
+<style>
+:root{
+  color-scheme: light;
+  --page:#eef2f7; --surface:#ffffff; --surface-2:#f5f7fb; --border:#dfe5ee;
+  --text:#0f1c33; --text-2:#4b5870; --muted:#7a8699;
+  --hdr:#12305f; --hdr-2:#1c417c; --hdr-text:#ffffff;
+  --ref:#1f3b73; --kontrak:#1baf7a; --bayar:#2a78d6; --proj:#eda100; --komit:#eb6834;
+  --good:#1f8a4c; --good-bg:#e3f4ea; --warn:#b26a00; --warn-bg:#fff2d6; --bad:#c62f2f; --bad-bg:#fde6e6;
+  --cat1:#2a78d6; --cat2:#eb6834; --cat3:#1baf7a; --cat4:#eda100; --cat5:#e87ba4; --cat6:#008300; --cat7:#4a3aa7; --cat8:#e34948;
+  --grid:#e8ecf2; --track:#edf1f6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#0f141c; --surface:#181e28; --surface-2:#1f2733; --border:#2b3544;
+    --text:#eef2f8; --text-2:#b7c1d1; --muted:#8a95a8;
+    --hdr:#0b1f40; --hdr-2:#15315e; --hdr-text:#ffffff;
+    --ref:#8fa9dc; --kontrak:#199e70; --bayar:#3987e5; --proj:#c98500; --komit:#d95926;
+    --good:#4cc27e; --good-bg:#16301f; --warn:#e3a33a; --warn-bg:#352a12; --bad:#ef6f6f; --bad-bg:#3a1a1a;
+    --cat1:#3987e5; --cat2:#d95926; --cat3:#199e70; --cat4:#c98500; --cat5:#d55181; --cat6:#008300; --cat7:#9085e9; --cat8:#e66767;
+    --grid:#263041; --track:#232c39;
+  }
+}
+:root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:#0f141c; --surface:#181e28; --surface-2:#1f2733; --border:#2b3544;
+    --text:#eef2f8; --text-2:#b7c1d1; --muted:#8a95a8;
+    --hdr:#0b1f40; --hdr-2:#15315e; --hdr-text:#ffffff;
+    --ref:#8fa9dc; --kontrak:#199e70; --bayar:#3987e5; --proj:#c98500; --komit:#d95926;
+    --good:#4cc27e; --good-bg:#16301f; --warn:#e3a33a; --warn-bg:#352a12; --bad:#ef6f6f; --bad-bg:#3a1a1a;
+    --cat1:#3987e5; --cat2:#d95926; --cat3:#199e70; --cat4:#c98500; --cat5:#d55181; --cat6:#008300; --cat7:#9085e9; --cat8:#e66767;
+    --grid:#263041; --track:#232c39;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--text);font:13px/1.4 "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.num{font-variant-numeric:tabular-nums}
+header{background:linear-gradient(90deg,var(--hdr),var(--hdr-2));color:var(--hdr-text);padding:14px 20px;display:flex;flex-wrap:wrap;gap:14px 24px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:14px;align-items:center;min-width:0}
+.brand svg{flex:none}
+.brand h1{margin:0;font-size:22px;letter-spacing:.3px;font-weight:800;text-transform:uppercase}
+.brand p{margin:2px 0 0;font-size:13px;opacity:.85}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.f{display:flex;flex-direction:column;gap:3px}
+.f label{font-size:11px;font-weight:600;opacity:.85}
+.f select{height:32px;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:#fff;color:#0f1c33;padding:0 8px;font:inherit;min-width:120px}
+.btn{height:32px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;padding:0 12px;font:600 12px/30px inherit;cursor:pointer;white-space:nowrap}
+.btn:hover{background:rgba(255,255,255,.22)}
+.btn:focus-visible,.seg button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--proj);outline-offset:2px}
+.stamp{font-size:11px;opacity:.85;text-align:right}
+main{padding:14px 16px 24px;display:grid;gap:14px;grid-template-columns:repeat(12,minmax(0,1fr));max-width:1680px;margin:0 auto}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;min-width:0;display:flex;flex-direction:column}
+.card h2{margin:0 0 10px;font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.card h2 .no{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--ref);color:var(--surface);font-size:12px;margin-right:8px}
+.card h2 small{font-weight:500;color:var(--muted);font-size:11px}
+.card h3{margin:0 0 6px;font-size:12.5px;font-weight:700;color:var(--text-2)}
+.c4{grid-column:span 4}.c6{grid-column:span 6}.c12{grid-column:span 12}
+.split{display:grid;gap:16px;flex:1;min-height:0}
+.s84{grid-template-columns:minmax(0,8fr) minmax(0,4fr)}
+.s57{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.s444{grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(0,5fr)}
+.s66{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.pane{display:flex;flex-direction:column;min-width:0}
+/* KPI */
+.kpi{padding:16px 18px;display:grid;grid-template-columns:52px 1fr;gap:6px 14px;align-items:center}
+.kpi .ic{width:52px;height:52px;border-radius:50%;background:var(--ref);display:grid;place-items:center;grid-row:span 2}
+.kpi .ic svg{width:26px;height:26px;stroke:var(--surface);fill:none;stroke-width:2}
+.kpi .lb{font-size:11.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--text-2)}
+.kpi .v{font-size:34px;font-weight:800;line-height:1.05}
+.kpi .rp{grid-column:1/-1;font-size:13px;color:var(--text-2)}
+.kpi .rp b{color:var(--text);font-size:15px}
+.kpi .meter{grid-column:1/-1;height:10px;border-radius:5px;background:var(--track);overflow:hidden;position:relative}
+.kpi .meter i{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.kpi .split2{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.kpi .split2 div{background:var(--surface-2);border-radius:8px;padding:6px 10px;font-size:11.5px;color:var(--text-2)}
+.kpi .split2 b{display:block;font-size:14px;color:var(--text)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge.good{background:var(--good-bg);color:var(--good)}.badge.warn{background:var(--warn-bg);color:var(--warn)}.badge.bad{background:var(--bad-bg);color:var(--bad)}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:var(--surface);color:var(--text-2);font:600 11.5px inherit;padding:5px 11px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--border)}
+.seg button.on{background:var(--ref);color:var(--surface)}
+.chartbox{position:relative;flex:1;min-height:240px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--text-2);margin:0 0 8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.donutwrap{display:grid;grid-template-columns:minmax(170px,230px) 1fr;gap:14px;align-items:center;flex:1}
+.donut{position:relative;height:230px}
+.donut .center{position:absolute;inset:0;display:grid;place-items:center;text-align:center;pointer-events:none}
+.donut .center b{font-size:17px;display:block}
+.donut .center span{font-size:11px;color:var(--muted)}
+.dlist{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.dlist>div{display:grid;grid-template-columns:12px 1fr auto;gap:8px;align-items:center}
+.dlist i{width:11px;height:11px;border-radius:50%}
+.dlist span{color:var(--text-2);white-space:nowrap}
+.bar{position:relative;height:10px;background:var(--track);border-radius:4px;overflow:hidden}
+.bar .p{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{background:var(--surface-2);color:var(--text-2);font-weight:700;font-size:11px;text-align:right;padding:7px 8px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td{padding:6px 8px;border-bottom:1px solid var(--grid);text-align:right;white-space:nowrap}
+.tbl tr.tot td{font-weight:800;background:var(--surface-2);border-top:2px solid var(--border);position:sticky;bottom:0}
+.tbl tbody tr:hover td{background:var(--surface-2)}
+.tbl tr.future td{color:var(--muted)}
+.tbl .cellbar{display:inline-block;width:52px;height:8px;border-radius:3px;background:var(--track);margin-right:6px;position:relative;overflow:hidden}
+.tbl .cellbar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.scroll{overflow:auto;border:1px solid var(--border);border-radius:8px;flex:1;min-height:0}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.toolbar .lbl{font-size:11px;color:var(--muted);font-weight:600}
+.toolbar input{height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:0 8px;font:inherit;font-size:12px}
+.note{font-size:11px;color:var(--muted);margin-top:8px}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.mini div{background:var(--surface-2);border-radius:8px;padding:8px 12px}
+.mini span{display:block;font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.mini b{font-size:17px}
+.stages{display:flex;flex-direction:column;gap:8px}
+.stages .row{display:grid;grid-template-columns:1fr 84px;gap:8px;font-size:11.5px;align-items:end}
+.stages .bar .p{background:var(--komit)}
+.tip{position:fixed;pointer-events:none;background:var(--text);color:var(--surface);font-size:11.5px;padding:6px 9px;border-radius:6px;z-index:50;opacity:0;transition:opacity .1s;max-width:280px}
+footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+.sdot{display:inline-block;width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--border)}.sdot.good{background:var(--good)}.sdot.warn{background:var(--proj)}.sdot.bad{background:var(--bad)}
+.c8{grid-column:span 8}
+.mini5{grid-template-columns:repeat(5,1fr)}
+.empty{padding:30px;text-align:center;color:var(--muted)}
+@media (max-width:1180px){.s84,.s57,.s444,.s66{grid-template-columns:1fr}.c6,.c4,.c8{grid-column:span 12}.scroll{max-height:420px}}
+@media (max-width:760px){
+  header{padding:12px 16px}.brand h1{font-size:17px}
+  main{padding:12px 16px 20px;gap:12px}
+  .kpi .v{font-size:28px}.mini,.mini5{grid-template-columns:repeat(2,1fr)}
+  .donutwrap{grid-template-columns:1fr}
+  .f select{min-width:0;width:100%}.filters{width:100%}.f{flex:1 1 40%}
+  .stamp{text-align:left}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><rect x="4" y="8" width="14" height="28" rx="2" fill="none" stroke="#fff" stroke-width="2.4"/><rect x="18" y="4" width="18" height="32" rx="2" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M9 14h4M9 20h4M9 26h4M23 11h8M23 17h8M23 23h8M23 29h8" stroke="#fff" stroke-width="2.4"/></svg>
+    <div>
+      <h1 id="ttl">Monitoring Anggaran Investasi UIW NTB</h1>
+      <p>Penyerapan AI &amp; AKI Lanjutan dan Murni · AKB vs Realisasi · Komitmen Bayar · Kontrak Terbayar</p>
+    </div>
+  </div>
+  <div class="filters">
+    <div class="f"><label for="fStatus">Status Anggaran</label>
+      <select id="fStatus"><option value="Semua">Semua</option><option>Lanjutan</option><option>Murni</option></select></div>
+    <div class="f"><label for="fUnit">Unit / Bidang</label><select id="fUnit"></select></div>
+    <div class="f"><label for="fBulan">Realisasi s.d.</label><select id="fBulan"></select></div>
+    <div class="f"><label>&nbsp;</label><button class="btn" id="btnLoad" type="button" title="Ambil data terbaru dari Google Sheet">↻ Muat ulang</button></div>
+    <div class="f"><label>&nbsp;</label><button class="btn" id="btnConn" type="button" style="display:none" title="Atur koneksi ke Google Sheet">⚙ Koneksi</button></div>
+    <div class="f"><label>&nbsp;</label><button class="btn" id="btnTheme" type="button" aria-label="Ganti tema terang/gelap">◐ Tema</button></div>
+    <div class="stamp" id="stamp"></div>
+  </div>
+</header>
+
+<main>
+  <div id="warn" style="display:none;grid-column:span 12;background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600"></div>
+  <!-- 1. Angka ringkasan -->
+  <section class="card c4 kpi" id="k1"></section>
+  <section class="card c4 kpi" id="k2"></section>
+  <section class="card c4 kpi" id="k3"></section>
+
+  <!-- 2. Komposisi AKI per program + perbandingan -->
+  <section class="card c4">
+    <h2><span><span class="no">2</span>Komposisi AKI per Program</span><span class="seg" id="segS2"><button class="on" data-v="Semua">Semua</button><button data-v="Lanjutan">Lanjutan</button><button data-v="Murni">Murni</button></span></h2>
+    <div class="donut" style="height:240px"><canvas id="cDonut" aria-label="Komposisi AKI per program"></canvas><div class="center"><div><b id="donutTot"></b><span>AKI SKAI</span></div></div></div>
+    <div class="dlist" id="donutList" style="margin-top:12px;flex:1;justify-content:space-around"></div>
+  </section>
+  <section class="card c8">
+    <h2><span><span class="no">2</span>Perbandingan Anggaran per Program</span><span class="seg" id="segCmp"><button class="on" data-v="aiaki">AI vs AKI</button><button data-v="ai">AI SKAI vs AI SKKI</button><button data-v="aki">AKI SKAI vs AKI SKKI</button></span></h2>
+    <div class="mini mini5" id="cmpMini"></div>
+    <div class="legend" id="lgCmp"></div>
+    <div class="chartbox" style="min-height:380px"><canvas id="cCmp" aria-label="Perbandingan anggaran per program"></canvas></div>
+  </section>
+
+  <!-- 3. AKB vs Realisasi -->
+  <section class="card c12">
+    <h2><span><span class="no">3</span>AKB (LKAI) vs Realisasi Bayar (Monitoring)</span><span class="seg" id="segMon"><button class="on" data-v="bln">Bulanan</button><button data-v="kum">Kumulatif</button></span></h2>
+    <div class="split s66">
+      <div class="pane">
+        <div class="legend" id="lgMon"></div>
+        <div class="chartbox" style="min-height:330px"><canvas id="cMon" aria-label="AKB vs realisasi bulanan"></canvas></div>
+      </div>
+      <div class="pane"><div class="scroll"><table class="tbl num" id="tMon"></table></div></div>
+    </div>
+  </section>
+
+  <!-- 4. Anggaran vs Penyerapan -->
+  <section class="card c12">
+    <h2><span><span class="no">4</span>Anggaran vs Penyerapan</span><small id="apSub"></small></h2>
+    <div class="toolbar">
+      <span class="lbl">Perbandingan</span><span class="seg" id="segMeas"><button class="on" data-v="aki">AKI vs Terbayar</button><button data-v="ai">AI vs Terkontrak</button></span>
+      <span class="lbl">Per</span><span class="seg" id="segDim"><button class="on" data-v="program">Program</button><button data-v="unit">Unit &amp; Bidang</button><button data-v="prk">PRK</button></span>
+      <span class="lbl">Status</span><span class="seg" id="segAp"><button class="on" data-v="Semua">Semua</button><button data-v="Lanjutan">Lanjutan</button><button data-v="Murni">Murni</button></span>
+      <input id="fCari" placeholder="Cari…" aria-label="Cari">
+    </div>
+    <div class="split s57">
+      <div class="pane">
+        <div class="legend" id="lgAP"></div>
+        <div class="chartbox" id="boxAP" style="min-height:0;flex:none"><canvas id="cAP" aria-label="Anggaran vs penyerapan"></canvas></div>
+      </div>
+      <div class="pane"><div class="scroll" id="scAP" style="max-height:480px;flex:none"><table class="tbl num" id="tAP"></table></div></div>
+    </div>
+  </section>
+
+  <!-- 5. Komitmen -->
+  <section class="card c12">
+    <h2><span><span class="no">5</span>Komitmen Rencana Bayar vs Realisasi</span><select id="fKomBln" aria-label="Bulan komitmen" style="height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:12px;padding:0 6px"></select></h2>
+    <div class="mini" id="komMini"></div>
+    <div class="split s444">
+      <div class="pane"><h3>Per unit / bidang</h3>
+        <div class="legend"><span><i style="background:var(--komit)"></i>Komitmen</span><span><i style="background:var(--bayar)"></i>Realisasi</span></div>
+        <div class="chartbox" style="min-height:260px"><canvas id="cKom" aria-label="Komitmen vs realisasi per unit"></canvas></div></div>
+      <div class="pane"><h3>Per minggu</h3>
+        <div class="legend"><span><i style="background:var(--komit)"></i>Komitmen</span><span><i style="background:var(--bayar)"></i>Realisasi</span></div>
+        <div class="chartbox" style="min-height:260px"><canvas id="cWeek" aria-label="Komitmen vs realisasi per minggu"></canvas></div></div>
+      <div class="pane"><h3>Sisa komitmen belum terbayar per tahapan VIP</h3><div class="stages" id="stages"></div></div>
+    </div>
+  </section>
+
+  <!-- 6. Monitoring kontrak -->
+  <section class="card c12">
+    <h2><span><span class="no">6</span>Monitoring Kontrak Terbayar per Unit</span><span class="seg" id="segKon"><button data-v="Semua" class="on">Semua</button><button data-v="Lanjutan">Lanjutan</button><button data-v="Murni">Murni</button></span></h2>
+    <div class="mini" id="konMini"></div>
+    <div class="split s66">
+      <div class="pane"><h3>Nilai kontrak: terbayar vs sisa (Rp Miliar)</h3>
+        <div class="legend"><span><i style="background:var(--bayar)"></i>Terbayar kontrak</span><span><i style="background:var(--cat7)"></i>Pajak &amp; di luar daftar</span><span><i style="background:var(--muted);opacity:.45"></i>Sisa belum terbayar</span><span><i style="background:var(--bad)"></i>Sisa lewat tgl batas</span></div>
+        <div class="chartbox" style="min-height:300px"><canvas id="cKonV" aria-label="Nilai kontrak terbayar vs sisa"></canvas></div></div>
+      <div class="pane"><h3>Jumlah kontrak menurut status bayar</h3>
+        <div class="legend"><span><i style="background:var(--good)"></i>Lunas</span><span><i style="background:var(--bayar)"></i>Terbayar sebagian</span><span><i style="background:var(--muted);opacity:.45"></i>Belum ada pembayaran</span></div>
+        <div class="chartbox" style="min-height:300px"><canvas id="cKonN" aria-label="Jumlah kontrak per status"></canvas></div></div>
+    </div>
+    <div class="scroll" style="margin-top:14px;flex:none"><table class="tbl num" id="tKon"></table></div>
+
+  </section>
+
+  <footer><span id="src"></span><span>Rp · M = Miliar</span></footer>
+</main>
+<div class="tip" id="tip"></div>
+<div id="connBox" style="position:fixed;inset:0;display:none;place-items:center;background:rgba(10,20,40,.55);z-index:80;padding:16px">
+  <div class="card" style="width:min(520px,100%);gap:10px">
+    <h2 style="margin:0">Koneksi ke Google Sheet</h2>
+    <label style="font-size:12px;font-weight:600">URL Web App<input id="cUrl" placeholder="https://script.google.com/macros/s/…/exec" style="width:100%;margin-top:4px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:0 10px;font:inherit"></label>
+    <label style="font-size:12px;font-weight:600">Kunci Akses<input id="cKey" type="password" placeholder="dari sheet PENGATURAN" style="width:100%;margin-top:4px;height:34px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:0 10px;font:inherit"></label>
+    <div style="font-size:12px;color:var(--text-2)">Google Sheet: <a href="https://docs.google.com/spreadsheets/d/1iIkZRl2L1OThEM1NzYZB9yy2KcIzwoqrtXRcWyCVPXg/edit" target="_blank" style="color:var(--bayar)">Data_Dashboard_AI_UIW_NTB</a> · Kunci Akses sudah terisi otomatis.</div>
+    <div id="cMsg" style="color:var(--bad);font-size:12px;min-height:16px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" style="background:var(--surface-2);color:var(--text);border-color:var(--border)" onclick="document.getElementById('connBox').style.display='none'">Batal</button><button class="btn" style="background:var(--ref);color:#fff" onclick="saveConn()">Simpan &amp; muat</button></div>
+  </div>
+</div>
+<div id="loading" style="position:fixed;inset:0;display:grid;place-items:center;background:color-mix(in srgb,var(--page) 80%,transparent);z-index:70;font-weight:600;color:var(--text-2)">Memuat data dari Google Sheet…</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+let DATA = {meta:{judul:"Monitoring Anggaran Investasi UIW NTB",tanggal:"",bulan:9,peringatan:[]},unit:[],prk:[],rencana:[],realisasi:[],komitmen:[],kontrak:[]};
+const BUL = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+const BULF = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const S = {status:'Semua', unit:'Semua', bulan:9, mon:'bln', meas:'aki', dim:'program', cari:'', komBln:null, kon:'Semua', s2:'Semua', cmp:'aiaki', ap:'Semua'};
+const charts = {};
+const $ = id => document.getElementById(id);
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const nf1 = new Intl.NumberFormat('id-ID',{minimumFractionDigits:1,maximumFractionDigits:1});
+const M = v => nf1.format((v||0)/1e9);
+const RpM = v => 'Rp ' + M(v) + ' M';
+const P = (a,b) => b ? (a/b) : 0;
+const pct = x => nf1.format(x*100) + '%';
+const sum = (arr,f) => arr.reduce((s,x)=>s+(+f(x)||0),0);
+const inStatus = s => S.status==='Semua' || s===S.status;
+const inUnit = u => S.unit==='Semua' || u===S.unit;
+const esc = s => String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tickM = v => nf1.format(v/1e9).replace(',0','');
+function shortUnit(u){return String(u).replace('KANWIL - ','Kanwil · ').replace('Keuangan, Komunikasi dan Umum','KKU').replace('Niaga & Pelayanan Pelanggan','Niaga & PP').replace('Transmisi & Distribusi','Trans & Dist')}
+function alpha(hex,a){const h=hex.replace('#','');if(h.length!==6)return hex;const n=parseInt(h,16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`}
+
+/* ---------- aggregates ---------- */
+function unitsAgg(st=S.status){
+  const map=new Map();
+  DATA.unit.filter(u=>st==='Semua'||u.status===st).forEach(u=>{
+    if(!map.has(u.unit)) map.set(u.unit,{unit:u.unit,grup:u.grup,ai:0,aki:0,kontrak:0,bayar:0});
+    const o=map.get(u.unit); o.ai+=+u.ai||0; o.aki+=+u.aki||0; o.kontrak+=+u.kontrak||0; o.bayar+=+u.bayar||0;
+  });
+  return [...map.values()].filter(o=>o.ai||o.aki||o.kontrak||o.bayar);
+}
+function realMonthly(){const a=Array(12).fill(0);DATA.realisasi.filter(r=>inStatus(r.status)&&inUnit(r.unit)).forEach(r=>r.bulan.forEach((v,i)=>a[i]+=+v||0));return a}
+function akbMonthly(){const a=Array(12).fill(0);DATA.rencana.filter(r=>inStatus(r.status)).forEach(r=>r.bulan.forEach((v,i)=>a[i]+=+v||0));return a}
+function kontrakRows(st){return (DATA.kontrak||[]).filter(k=>(st==='Semua'||k.status===st)&&inUnit(k.unit))}
+
+/* ---------- 1. KPI ---------- */
+const IC={
+  doc:'<svg viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>',
+  pie:'<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/></svg>',
+  check:'<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 12l3 3 5-6"/></svg>'
+};
+function kpiCard(id,icon,label,p,num,den,numLbl,denLbl,color,splits){
+  $(id).innerHTML=`<div class="ic">${IC[icon]}</div><div class="lb">${label}</div><div class="v num">${pct(p)}</div>
+   <div class="meter" role="img" aria-label="${label} ${pct(p)}"><i style="width:${Math.min(100,p*100)}%;background:${color}"></i></div>
+   <div class="rp num"><b>${RpM(num)}</b> ${numLbl} dari ${RpM(den)} ${denLbl}</div>
+   <div class="split2 num">${splits.map(s=>`<div>${s[0]}<b>${pct(s[1])}</b>${RpM(s[2])}</div>`).join('')}</div>`;
+}
+function renderKPI(){
+  const U=unitsAgg().filter(u=>inUnit(u.unit)); const ai=sum(U,u=>u.ai), aki=sum(U,u=>u.aki), k=sum(U,u=>u.kontrak), b=sum(U,u=>u.bayar);
+  const by=st=>{const X=unitsAgg(st).filter(u=>inUnit(u.unit));return {ai:sum(X,u=>u.ai),aki:sum(X,u=>u.aki),k:sum(X,u=>u.kontrak),b:sum(X,u=>u.bayar)}};
+  const L=by('Lanjutan'), Mu=by('Murni'); const sts=['Lanjutan','Murni'].filter(inStatus);
+  const pick=(f)=>sts.map(s=>{const o=s==='Lanjutan'?L:Mu;return [s,...f(o)]});
+  kpiCard('k1','doc','% AI Terkontrak',P(k,ai),k,ai,'terkontrak','AI',css('--kontrak'),pick(o=>[P(o.k,o.ai),o.k]));
+  kpiCard('k2','pie','% AKI Terbayar s.d. '+BUL[S.bulan-1],P(b,aki),b,aki,'terbayar','AKI',css('--bayar'),pick(o=>[P(o.b,o.aki),o.b]));
+  const kr=st=>{const X=kontrakRows(st);return {n:sum(X,x=>x.nilai),t:sum(X,x=>(+x.terbayar||0)+(+x.pajak||0)+(+x.luar||0))}};
+  const KA=kr(S.status);
+  kpiCard('k3','check','% Kontrak Terbayar',P(KA.t,KA.n),KA.t,KA.n,'terbayar','nilai kontrak',css('--good'),sts.map(s=>{const o=kr(s);return [s,P(o.t,o.n),o.t]}));
+}
+
+/* ---------- 2. donut per program + Lanjutan vs Murni ---------- */
+function catColors(){return [1,2,3,4,5,6,7,8].map(i=>css('--cat'+i))}
+const inS2 = st => S.s2==='Semua' || st===S.s2;
+function progAgg(){
+  const g=new Map(); DATA.prk.filter(p=>inS2(p.status)).forEach(p=>{if(!g.has(p.program)) g.set(p.program,{name:p.program,ai:0,aki:0,ai_l:0,aki_l:0});
+    const o=g.get(p.program); o.ai+=+p.ai||0; o.aki+=+p.aki||0; o.ai_l+=+(p.ai_lkai??p.ai)||0; o.aki_l+=+(p.aki_lkai??p.aki)||0});
+  return [...g.values()].filter(o=>o.ai||o.aki||o.ai_l||o.aki_l);
+}
+function renderDonut(){
+  let arr=progAgg().map(o=>[o.name,o.aki_l]).filter(e=>e[1]>0).sort((a,b)=>b[1]-a[1]); const tot=sum(arr,e=>e[1]);
+  if(arr.length>8){const rest=arr.slice(7);arr=arr.slice(0,7);arr.push([`Lainnya (${rest.length})`,sum(rest,e=>e[1])])}
+  const cols=catColors();
+  $('donutTot').textContent=RpM(tot);
+  $('donutList').innerHTML=arr.map((e,i)=>`<div><i style="background:${cols[i]}"></i><b style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(e[0])}">${esc(e[0])}</b><span class="num">${M(e[1])} M · ${pct(e[1]/tot)}</span></div>`).join('')||'<div class="empty">Tidak ada data</div>';
+  mk('cDonut','doughnut',{labels:arr.map(e=>e[0]),datasets:[{data:arr.map(e=>e[1]),backgroundColor:cols.slice(0,arr.length),borderColor:css('--surface'),borderWidth:2,hoverOffset:4}]},
+    {cutout:'62%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${RpM(c.raw)} (${pct(c.raw/tot)})`}}}});
+}
+function renderCmp(){
+  const rows=progAgg();
+  // total SKKI resmi dari data per unit (REKAP), LKAI dari data per PRK
+  const U=unitsAgg(S.s2); const aiS=sum(U,u=>u.ai), akiS=sum(U,u=>u.aki), aiL=sum(rows,o=>o.ai_l), akiL=sum(rows,o=>o.aki_l);
+  const sel=(a,b)=>{let d=a-b; if(Math.abs(d)<5e7) d=0;return `<b class="num" style="color:${Math.abs(d)<1e6?'var(--text)':d<0?'var(--bad)':'var(--good)'}">${d<0?'−':d>0?'+':''}${RpM(Math.abs(d))}</b>`};
+  $('cmpMini').innerHTML=`<div><span>AI SKAI</span><b class="num">${RpM(aiL)}</b></div><div><span>AI SKKI</span><b class="num">${RpM(aiS)}</b></div><div><span>AKI SKAI</span><b class="num">${RpM(akiL)}</b></div><div><span>AKI SKKI</span><b class="num">${RpM(akiS)}</b></div><div><span>Selisih AKI SKAI−SKKI</span>${sel(akiL,akiS)}</div>`;
+  const ref=css('--ref'), cfg={aiaki:[['AI SKAI','ai_l',ref],['AKI SKAI','aki_l',css('--cat2')]],ai:[['AI SKAI','ai_l',ref],['AI SKKI','ai',alpha(ref,.4)]],aki:[['AKI SKAI','aki_l',css('--cat2')],['AKI SKKI','aki',alpha(css('--cat2'),.4)]]}[S.cmp];
+  rows.sort((a,b)=>b[cfg[0][1]]-a[cfg[0][1]]||b[cfg[1][1]]-a[cfg[1][1]]);
+  const top=rows.filter(o=>o[cfg[0][1]]||o[cfg[1][1]]);
+  $('lgCmp').innerHTML=cfg.map(c=>`<span><i style="background:${c[2]}"></i>${c[0]}</span>`).join('');
+  mk('cCmp','bar',{labels:top.map(o=>o.name.length>36?o.name.slice(0,35)+'…':o.name),datasets:cfg.map(c=>({label:c[0],data:top.map(o=>o[c[1]]),backgroundColor:c[2],borderRadius:4,maxBarThickness:13}))},
+    {indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>top[it[0].dataIndex].name,label:c=>`${c.dataset.label}: ${RpM(c.raw)}`,afterBody:it=>{const o=top[it[0].dataIndex];const a=o[cfg[0][1]],b=o[cfg[1][1]];return S.cmp==='aiaki'?`AKI/AI: ${pct(P(b,a))}`:`Selisih: ${a-b<0?'−':'+'}${RpM(Math.abs(a-b))}`}}}},
+     scales:{x:{beginAtZero:true,ticks:{callback:tickM}},y:{grid:{display:false},ticks:{autoSkip:false,font:{size:10.5}}}}});
+}
+
+/* ---------- 3. AKB vs realisasi ---------- */
+function renderMonthly(){
+  const showAkb=S.unit==='Semua', cur=S.bulan-1;
+  const real=realMonthly(), lk=akbMonthly();
+  // AKB: bulan yang sudah lewat = realisasi VIP (monitoring); bulan berjalan & sesudahnya = rencana LKAI
+  const realAll=(()=>{const a=Array(12).fill(0);DATA.realisasi.filter(r=>inStatus(r.status)).forEach(r=>r.bulan.forEach((v,i)=>a[i]+=+v||0));return a})();
+  const akb=lk.map((v,i)=>i<cur?realAll[i]:v);
+  const r=real.map((v,i)=>i<=cur?v:null);
+  const ref=css('--ref'), bay=css('--bayar');
+  const cum=a=>{let s=0;return a.map(v=>v==null?null:(s+=v))};
+  const U=unitsAgg().filter(u=>inUnit(u.unit)); const aki=sum(U,u=>u.aki);
+  const ds=[];
+  if(S.mon==='bln'){
+    if(showAkb) ds.push({type:'bar',label:'AKB (LKAI)',data:akb,backgroundColor:ref,borderRadius:4,maxBarThickness:22});
+    ds.push({type:'bar',label:'Realisasi (Monitoring)',data:r,backgroundColor:bay,borderRadius:4,maxBarThickness:22});
+  } else {
+    if(showAkb) ds.push({type:'line',label:'AKB kumulatif',data:cum(akb),borderColor:ref,backgroundColor:ref,borderWidth:2,pointRadius:3,tension:.2});
+    ds.push({type:'line',label:'Realisasi kumulatif',data:cum(r),borderColor:bay,backgroundColor:bay,borderWidth:2,pointRadius:4,tension:.2});
+    ds.push({type:'line',label:'AKI',data:Array(12).fill(aki),borderColor:css('--muted'),borderWidth:1.5,borderDash:[3,3],pointRadius:0});
+  }
+  $('lgMon').innerHTML=ds.map(d=>`<span><i style="background:${d.borderColor||d.backgroundColor}"></i>${d.label}</span>`).join('');
+  mk('cMon','bar',{labels:BUL,datasets:ds},{plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.raw==null?null:`${c.dataset.label}: ${RpM(c.raw)}`}}},
+    scales:{x:{grid:{display:false}},y:{beginAtZero:true,title:{display:true,text:'Rp Miliar'},ticks:{callback:tickM}}}});
+  // tabel bulanan + akumulasi
+  const col=x=>x>=0.995?'var(--good)':x>=0.9?'var(--warn)':'var(--bad)';
+  let ka=0, kr=0;
+  let h=`<thead><tr><th>Bulan</th>${showAkb?'<th>AKB (M)</th>':''}<th>Realisasi (M)</th>${showAkb?'<th>% Bulan</th><th>AKB Kum. (M)</th>':''}<th>Realisasi Kum. (M)</th>${showAkb?'<th>% Kum.</th>':''}</tr></thead><tbody>`;
+  for(let i=0;i<12;i++){
+    const fut=i>cur; ka+=akb[i]; if(!fut) kr+=real[i];
+    const pB=P(real[i],akb[i]), pK=P(kr,ka);
+    h+=`<tr class="${fut?'future':''}"><td>${BULF[i]}</td>${showAkb?`<td>${M(akb[i])}</td>`:''}<td>${fut?'–':M(real[i])}</td>${showAkb?`<td style="color:${fut||!akb[i]?'':col(pB)}">${fut||!akb[i]?'–':pct(pB)}</td><td>${M(ka)}</td>`:''}<td>${fut?'–':M(kr)}</td>${showAkb?`<td style="color:${fut||!ka?'':col(pK)}">${fut||!ka?'–':pct(pK)}</td>`:''}</tr>`;
+  }
+  const akbSd=sum(akb.slice(0,cur+1),x=>x);
+  h+=`<tr class="tot"><td>s.d. ${BUL[cur]}</td>${showAkb?`<td>${M(akbSd)}</td>`:''}<td>${M(kr)}</td>${showAkb?`<td>${pct(P(kr,akbSd))}</td><td>${M(akbSd)}</td>`:''}<td>${M(kr)}</td>${showAkb?`<td>${pct(P(kr,akbSd))}</td>`:''}</tr></tbody>`;
+  $('tMon').innerHTML=h;
+}
+
+/* ---------- 4. Anggaran vs penyerapan ---------- */
+function apRows(){
+  const bk=S.meas==='aki'?'aki':'ai', rk=S.meas==='aki'?'bayar':'kontrak';
+  let rows;
+  if(S.dim==='unit'){
+    rows=unitsAgg(S.ap).filter(u=>inUnit(u.unit)).map(u=>({name:u.unit,label:shortUnit(u.unit),sub:u.grup,b:u[bk],r:u[rk]}));
+  } else {
+    const src=DATA.prk.filter(p=>S.ap==='Semua'||p.status===S.ap);
+    if(S.dim==='prk') rows=src.map(p=>({name:p.prk,label:p.prk,sub:p.program,st:p.status,b:p[bk],r:p[rk]}));
+    else {const g=new Map(); src.forEach(p=>{if(!g.has(p.program)) g.set(p.program,{name:p.program,label:p.program,sub:'',n:0,b:0,r:0}); const o=g.get(p.program); o.n++; o.b+=+p[bk]||0; o.r+=+p[rk]||0}); rows=[...g.values()].map(o=>({...o,sub:o.n+' PRK'}))}
+  }
+  const q=S.cari.trim().toLowerCase(); if(q) rows=rows.filter(o=>(o.name+' '+o.sub).toLowerCase().includes(q));
+  return rows.filter(o=>o.b||o.r).sort((a,b)=>b.b-a.b||b.r-a.r);
+}
+function renderAP(){
+  const rows=apRows(); const isAki=S.meas==='aki';
+  const bl=isAki?'AKI':'AI', rl=isAki?'Terbayar':'Terkontrak', rc=isAki?css('--bayar'):css('--kontrak');
+  $('apSub').textContent=`${bl} vs ${rl} · ${S.dim==='unit'?'Unit & Bidang':S.dim==='prk'?'PRK':'Program'}${S.dim==='unit'?'':' · tingkat UIW'} · ${S.ap==='Semua'?'Lanjutan + Murni':S.ap}`;
+  $('lgAP').innerHTML=`<span><i style="background:${alpha(css('--ref'),.55)}"></i>${bl}</span><span><i style="background:${rc}"></i>${rl}</span>`;
+  const top=rows.slice(0,14);
+  renderAPTable(rows,bl,rl,rc);
+  const th=Math.min(480,$('tAP').offsetHeight+2);
+  $('boxAP').style.height=Math.max(th-26, top.length*30+50, 260)+'px';
+  mk('cAP','bar',{labels:top.map(o=>o.label.length>34?o.label.slice(0,33)+'…':o.label),datasets:[
+      {label:bl,data:top.map(o=>o.b),backgroundColor:alpha(css('--ref'),.55),borderRadius:4,maxBarThickness:13},
+      {label:rl,data:top.map(o=>o.r),backgroundColor:rc,borderRadius:4,maxBarThickness:13}]},
+    {indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{title:it=>top[it[0].dataIndex].name,label:c=>`${c.dataset.label}: ${RpM(c.raw)}`,afterBody:it=>{const o=top[it[0].dataIndex];return [`Capaian: ${pct(P(o.r,o.b))}`, o.sub?String(o.sub):''].filter(Boolean)}}}},
+     scales:{x:{beginAtZero:true,ticks:{callback:tickM}},y:{grid:{display:false},ticks:{autoSkip:false,font:{size:10.5}}}}});
+}
+function renderAPTable(rows,bl,rl,rc){
+  const first=S.dim==='prk'?'No PRK':S.dim==='unit'?'Unit / Bidang':'Program';
+  let h=`<thead><tr><th>${first}</th>${S.dim==='prk'?'<th style="text-align:left">Program</th><th style="text-align:left">Status</th>':''}<th>${bl} (M)</th><th>${rl} (M)</th><th>% ${rl}</th><th>Sisa (M)</th></tr></thead><tbody>`;
+  rows.forEach(o=>{const p=P(o.r,o.b);h+=`<tr><td title="${esc(o.name)}" style="max-width:240px;overflow:hidden;text-overflow:ellipsis">${esc(o.label)}</td>${S.dim==='prk'?`<td style="text-align:left;max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${esc(o.sub)}">${esc(o.sub)}</td><td style="text-align:left">${esc(o.st)}</td>`:''}<td>${M(o.b)}</td><td>${M(o.r)}</td><td><span class="cellbar"><i style="width:${Math.min(100,p*100)}%;background:${rc}"></i></span>${o.b?pct(p):'–'}</td><td>${M(o.b-o.r)}</td></tr>`});
+  const tb=sum(rows,o=>o.b), tr=sum(rows,o=>o.r);
+  h+=`<tr class="tot"><td>TOTAL (${rows.length})</td>${S.dim==='prk'?'<td></td><td></td>':''}<td>${M(tb)}</td><td>${M(tr)}</td><td>${pct(P(tr,tb))}</td><td>${M(tb-tr)}</td></tr></tbody>`;
+  $('tAP').innerHTML=rows.length?h:'<tbody><tr><td class="empty">Tidak ada data</td></tr></tbody>';
+}
+
+/* ---------- 5. Komitmen ---------- */
+function renderKom(){
+  const months=[...new Set(DATA.komitmen.map(k=>+k.bulan))].sort((a,b)=>a-b);
+  const sel=$('fKomBln');
+  if(!months.length){sel.innerHTML='';$('komMini').innerHTML='';$('stages').innerHTML='<div class="empty">Belum ada data komitmen</div>';destroy('cKom');destroy('cWeek');return}
+  if(!months.includes(S.komBln)) S.komBln=months[months.length-1];
+  sel.innerHTML=months.map(m=>`<option value="${m}" ${m===S.komBln?'selected':''}>${BULF[m-1]}</option>`).join('');
+  const rows=DATA.komitmen.filter(k=>+k.bulan===S.komBln&&inStatus(k.status)&&inUnit(k.unit));
+  const rb=sum(rows,k=>k.rencana), re=sum(rows,k=>k.realisasi);
+  $('komMini').innerHTML=`<div><span>Komitmen</span><b class="num">${RpM(rb)}</b></div><div><span>Realisasi</span><b class="num">${RpM(re)}</b></div><div><span>Capaian</span><b class="num">${pct(P(re,rb))}</b></div><div><span>Belum terbayar</span><b class="num">${RpM(Math.max(0,rb-re))}</b></div>`;
+  const g=new Map(); rows.forEach(k=>{if(!g.has(k.unit)) g.set(k.unit,{rb:0,re:0}); const o=g.get(k.unit); o.rb+=+k.rencana||0; o.re+=+k.realisasi||0});
+  const arr=[...g.entries()].sort((a,b)=>b[1].rb-a[1].rb);
+  const ko=css('--komit'), by=css('--bayar');
+  const opt=(lab,horiz)=>({indexAxis:horiz?'y':'x',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${RpM(c.raw)}`,afterBody:it=>{const o=lab[it[0].dataIndex];return 'Capaian: '+pct(P(o.re,o.rb))}}}},
+     scales:{[horiz?'x':'y']:{beginAtZero:true,ticks:{callback:tickM}},[horiz?'y':'x']:{grid:{display:false}}}});
+  mk('cKom','bar',{labels:arr.map(a=>shortUnit(a[0])),datasets:[{label:'Komitmen',data:arr.map(a=>a[1].rb),backgroundColor:ko,borderRadius:4,maxBarThickness:12},{label:'Realisasi',data:arr.map(a=>a[1].re),backgroundColor:by,borderRadius:4,maxBarThickness:12}]},opt(arr.map(a=>a[1]),true));
+  const wk=[1,2,3,4,5].map(w=>{const a=rows.filter(k=>+k.minggu===w);return {w,rb:sum(a,k=>k.rencana),re:sum(a,k=>k.realisasi)}}).filter(x=>x.rb>0||x.re>0);
+  mk('cWeek','bar',{labels:wk.map(w=>'Minggu '+w.w),datasets:[{label:'Komitmen',data:wk.map(w=>w.rb),backgroundColor:ko,borderRadius:4,maxBarThickness:26},{label:'Realisasi',data:wk.map(w=>w.re),backgroundColor:by,borderRadius:4,maxBarThickness:26}]},opt(wk,false));
+  const st=new Map(); rows.forEach(k=>{const s=(+k.rencana||0)-(+k.realisasi||0); if(s>1) st.set(k.tahap,(st.get(k.tahap)||0)+s)});
+  const sa=[...st.entries()].sort((a,b)=>b[1]-a[1]); const mx=Math.max(...sa.map(s=>s[1]),1);
+  $('stages').innerHTML=sa.length?sa.map(([k,v])=>`<div class="row"><div><div style="margin-bottom:3px">${esc(k)}</div><div class="bar"><div class="p" style="width:${v/mx*100}%"></div></div></div><span style="text-align:right" class="num"><b>${RpM(v)}</b></span></div>`).join(''):'<div class="empty">Seluruh komitmen telah terbayar</div>';
+}
+
+/* ---------- 6. Kontrak ---------- */
+function renderKon(){
+  const F=['jumlah','nilai','terbayar','pajak','luar','lunas','sebagian','belum','lewat','sisa_lewat'];
+  const g=new Map();
+  kontrakRows(S.kon).forEach(k=>{if(!g.has(k.unit)) g.set(k.unit,Object.fromEntries([['unit',k.unit],...F.map(f=>[f,0])]));
+    const o=g.get(k.unit); F.forEach(f=>o[f]+=+k[f]||0)});
+  const rows=[...g.values()].map(o=>(o.real=o.terbayar+o.pajak+o.luar,o)).filter(o=>o.jumlah>0||o.real>0).sort((a,b)=>b.nilai-a.nilai||b.real-a.real);
+  const T=Object.fromEntries(F.map(f=>[f,sum(rows,o=>o[f])])); T.real=T.terbayar+T.pajak+T.luar;
+  $('konMini').innerHTML=`<div><span>Kontrak · nilai</span><b class="num">${T.jumlah} · ${RpM(T.nilai)}</b></div><div><span>Total realisasi (monitoring)</span><b class="num">${RpM(T.real)} (${pct(P(T.real,T.nilai))})</b></div><div><span>Kontrak lunas</span><b class="num">${T.lunas} dari ${T.jumlah}</b></div><div><span>Lewat batas, belum lunas</span><b class="num" style="color:var(--bad)">${T.lewat} · ${RpM(T.sisa_lewat)}</b></div>`;
+  const lab=rows.map(o=>shortUnit(o.unit)), mut=alpha(css('--muted'),.45);
+  mk('cKonV','bar',{labels:lab,datasets:[
+      {label:'Terbayar kontrak',data:rows.map(o=>o.terbayar),backgroundColor:css('--bayar'),stack:'s',maxBarThickness:16},
+      {label:'Pajak & di luar daftar kontrak',data:rows.map(o=>o.pajak+o.luar),backgroundColor:css('--cat7'),stack:'s',maxBarThickness:16},
+      {label:'Sisa, lewat tgl batas',data:rows.map(o=>o.sisa_lewat),backgroundColor:css('--bad'),stack:'s',maxBarThickness:16},
+      {label:'Sisa, belum jatuh batas',data:rows.map(o=>Math.max(0,o.nilai-o.terbayar-o.sisa_lewat)),backgroundColor:mut,stack:'s',maxBarThickness:16}]},
+    {indexAxis:'y',plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${RpM(c.raw)}`,footer:it=>{const o=rows[it[0].dataIndex];return `Nilai kontrak ${RpM(o.nilai)} · realisasi ${RpM(o.real)}`}}}},
+     scales:{x:{stacked:true,beginAtZero:true,ticks:{callback:tickM}},y:{stacked:true,grid:{display:false}}}});
+  mk('cKonN','bar',{labels:lab,datasets:[
+      {label:'Lunas',data:rows.map(o=>o.lunas),backgroundColor:css('--good'),stack:'n',maxBarThickness:16},
+      {label:'Terbayar sebagian',data:rows.map(o=>o.sebagian),backgroundColor:css('--bayar'),stack:'n',maxBarThickness:16},
+      {label:'Belum ada pembayaran',data:rows.map(o=>o.belum),backgroundColor:mut,stack:'n',maxBarThickness:16}]},
+    {indexAxis:'y',plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${c.raw} kontrak`,footer:it=>`Total ${rows[it[0].dataIndex].jumlah} kontrak`}}},
+     scales:{x:{stacked:true,beginAtZero:true,ticks:{precision:0}},y:{stacked:true,grid:{display:false}}}});
+  const st=o=>o.lewat===0?['good','Sesuai jadwal']:(P(o.sisa_lewat,o.nilai)>0.2?['bad','Kritis']:['warn','Perlu tindak lanjut']);
+  const line=(name,o,cls='')=>{const [c,l]=st(o);return `<tr class="${cls}"><td title="${esc(name)}">${esc(shortUnit(name))}</td><td>${o.jumlah}</td><td>${M(o.nilai)}</td><td>${M(o.terbayar)}</td><td>${o.pajak?M(o.pajak):'–'}</td><td>${o.luar?M(o.luar):'–'}</td><td><b>${M(o.real)}</b></td>
+    <td><span class="cellbar"><i style="width:${Math.min(100,P(o.real,o.nilai)*100)}%;background:var(--bayar)"></i></span>${o.nilai?pct(P(o.real,o.nilai)):'–'}</td><td>${M(Math.max(0,o.nilai-o.terbayar))}</td>
+    <td>${o.lunas}</td><td>${o.sebagian}</td><td>${o.belum}</td><td>${o.lewat||'–'}</td><td>${o.lewat?M(o.sisa_lewat):'–'}</td><td style="text-align:center"><span class="sdot ${c}" role="img" aria-label="${l}" data-tip="${l}"></span></td></tr>`};
+  let h=`<thead><tr><th>Unit</th><th>Jml Kontrak</th><th>Nilai Kontrak (M)</th><th>Terbayar Kontrak (M)</th><th>Pajak (M)</th><th>Di Luar Daftar (M)</th><th>Total Realisasi (M)</th><th>% Realisasi</th><th>Sisa Kontrak (M)</th><th>Lunas</th><th>Sebagian</th><th>Belum Bayar</th><th>Lewat Batas</th><th>Sisa Lewat Batas (M)</th><th style="text-align:center">Status</th></tr></thead><tbody>`;
+  rows.forEach(o=>h+=line(o.unit,o)); h+=line('TOTAL',T,'tot')+'</tbody>';
+  $('tKon').innerHTML=rows.length?h:'<tbody><tr><td class="empty">Tidak ada data kontrak</td></tr></tbody>';
+}
+
+/* ---------- chart helper ---------- */
+function destroy(id){if(charts[id]){charts[id].destroy();delete charts[id]}}
+function mk(id,type,data,opt){
+  destroy(id);
+  Chart.defaults.font.family=getComputedStyle(document.body).fontFamily; Chart.defaults.font.size=11;
+  Chart.defaults.color=css('--text-2'); Chart.defaults.borderColor=css('--grid');
+  charts[id]=new Chart($(id),{type,data,options:Object.assign({responsive:true,maintainAspectRatio:false,animation:{duration:250},interaction:{mode:'nearest',intersect:false}},opt)});
+}
+
+/* ---------- controls ---------- */
+function fillControls(){
+  const units=[...new Set(DATA.unit.filter(u=>u.ai||u.aki||u.kontrak||u.bayar).map(u=>u.unit))];
+  if(!units.includes(S.unit)) S.unit='Semua';
+  $('fUnit').innerHTML='<option value="Semua">Semua</option>'+units.map(u=>`<option ${u===S.unit?'selected':''} value="${esc(u)}">${esc(shortUnit(u))}</option>`).join('');
+  $('fBulan').innerHTML=BULF.map((b,i)=>`<option value="${i+1}" ${i+1===S.bulan?'selected':''}>${b}</option>`).join('');
+  const m=DATA.meta; $('ttl').textContent=m.judul||'Monitoring Anggaran Investasi UIW NTB';
+  $('stamp').innerHTML=`Posisi data<br><b>${esc(fmtDate(m.tanggal))}</b>${m.revisi?` · Rev ${esc(m.revisi)}`:''}`;
+  $('src').textContent='Sumber: Google Sheet Data Dashboard (LKAI, Monitor SKKI, Rencana Bayar)';
+}
+function fmtDate(d){const m=String(d).match(/^(\d{1,2})-(\d{1,2})-(\d{4})$/);if(m)d=`${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}T00:00:00`;const x=new Date(d);return isNaN(x)?String(d):x.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
+function syncKon(){S.kon=S.status;S.s2=S.status;S.ap=S.status;[['segKon','kon'],['segS2','s2'],['segAp','ap']].forEach(([id,k])=>$(id).querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===S[k])))}
+function renderAll(){renderKPI();renderDonut();renderCmp();renderMonthly();renderAP();renderKom();renderKon()}
+$('fStatus').onchange=e=>{S.status=e.target.value;syncKon();renderAll()};
+$('fUnit').onchange=e=>{S.unit=e.target.value;renderAll()};
+$('fBulan').onchange=e=>{S.bulan=+e.target.value;renderAll()};
+$('fCari').oninput=e=>{S.cari=e.target.value;renderAP()};
+$('fKomBln').onchange=e=>{S.komBln=+e.target.value;renderKom()};
+function seg(id,key,fn){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{$(id).querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));S[key]=b.dataset.v;fn()})}
+seg('segMon','mon',renderMonthly); seg('segMeas','meas',renderAP); seg('segDim','dim',()=>{S.cari='';$('fCari').value='';renderAP()}); seg('segKon','kon',renderKon); seg('segS2','s2',()=>{renderDonut();renderCmp()}); seg('segCmp','cmp',renderCmp); seg('segAp','ap',renderAP);
+$('btnTheme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';renderAll()};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{if(!document.documentElement.dataset.theme)renderAll()});
+const tip=$('tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest('[data-tip]');if(!t){tip.style.opacity=0;return}
+  tip.innerHTML=t.dataset.tip;tip.style.opacity=1;const w=tip.offsetWidth;tip.style.left=Math.min(innerWidth-w-8,e.clientX+12)+'px';tip.style.top=(e.clientY+14)+'px'});
+
+/* ---------- data dari Google Sheet ----------
+ * Dibuka lewat Web App  → google.script.run
+ * Dibuka sebagai index.html → JSONP ke URL Web App + Kunci Akses (⚙ Koneksi)
+ * Boleh juga diisi permanen di CONFIG di bawah ini.                       */
+const SNAPSHOT = {"meta": {"judul": "Monitoring Anggaran Investasi UIW NTB", "tanggal": "29-09-2026", "tahun": 2026, "bulan": 9, "peringatan": []}, "unit": [{"grup": "Kantor Wilayah", "unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Lanjutan", "ai": 441349356, "aki": 365435205, "kontrak": 146479000, "bayar": 70584744}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Lanjutan", "ai": 54805998566, "aki": 45265281318, "kontrak": 41270010976, "bayar": 42443064773}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Perencanaan", "status": "Lanjutan", "ai": 1894860659, "aki": 0, "kontrak": 1894860659, "bayar": 0}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Transmisi & Distribusi", "status": "Lanjutan", "ai": 107863599497, "aki": 94364951394, "kontrak": 94189653400, "bayar": 66543224352}, {"grup": "Unit Pelaksana", "unit": "UP2B NTB", "status": "Lanjutan", "ai": 2927931413, "aki": 2427992256, "kontrak": 2927931413, "bayar": 1802391300}, {"grup": "Unit Pelaksana", "unit": "UP2D NTB", "status": "Lanjutan", "ai": 9555866854, "aki": 9555866853, "kontrak": 9555866854, "bayar": 9382764219}, {"grup": "Unit Pelaksana", "unit": "UP2K NTB", "status": "Lanjutan", "ai": 1981590870, "aki": 0, "kontrak": 1981590870, "bayar": 0}, {"grup": "Unit Pelaksana", "unit": "UP3 BIMA", "status": "Lanjutan", "ai": 14831598954, "aki": 11926648775, "kontrak": 14465419361, "bayar": 6323281713}, {"grup": "Unit Pelaksana", "unit": "UP3 MATARAM", "status": "Lanjutan", "ai": 47049525480, "aki": 45833300887, "kontrak": 39904504140, "bayar": 26009334243}, {"grup": "Unit Pelaksana", "unit": "UP3 SELAPARANG", "status": "Lanjutan", "ai": 10064790433, "aki": 9759072457, "kontrak": 9094409680, "bayar": 9001625368}, {"grup": "Unit Pelaksana", "unit": "UP3 SUMBAWA", "status": "Lanjutan", "ai": 13571436461, "aki": 13501499920, "kontrak": 13143624399, "bayar": 10147534190}, {"grup": "Unit Pelaksana", "unit": "UPT MATARAM", "status": "Lanjutan", "ai": 50182713609, "aki": 48471930827, "kontrak": 50182713609, "bayar": 37209722538}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Murni", "ai": 239509752, "aki": 239509752, "kontrak": 90000000, "bayar": 216769882}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "ai": 190069866808, "aki": 73343783606, "kontrak": 152672330468, "bayar": 14878692941}, {"grup": "Kantor Wilayah", "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "ai": 200470750686, "aki": 80997167131, "kontrak": 164441409361, "bayar": 69938010276}, {"grup": "Unit Pelaksana", "unit": "UP2B NTB", "status": "Murni", "ai": 32452413937, "aki": 0, "kontrak": 13899521010, "bayar": 0}, {"grup": "Unit Pelaksana", "unit": "UP2D NTB", "status": "Murni", "ai": 16240369127, "aki": 6002944141, "kontrak": 7605523929, "bayar": 535198601}, {"grup": "Unit Pelaksana", "unit": "UP3 BIMA", "status": "Murni", "ai": 24384292650, "aki": 10527843440, "kontrak": 19144938286, "bayar": 4026861681}, {"grup": "Unit Pelaksana", "unit": "UP3 MATARAM", "status": "Murni", "ai": 37177606931, "aki": 19777393086, "kontrak": 30954815471, "bayar": 5102550418}, {"grup": "Unit Pelaksana", "unit": "UP3 SELAPARANG", "status": "Murni", "ai": 29232229210, "aki": 9924216855, "kontrak": 24197571651, "bayar": 1696554460}, {"grup": "Unit Pelaksana", "unit": "UP3 SUMBAWA", "status": "Murni", "ai": 16376356241, "aki": 7537824709, "kontrak": 15099982235, "bayar": 3251064073}, {"grup": "Unit Pelaksana", "unit": "UPT MATARAM", "status": "Murni", "ai": 47499223941, "aki": 0, "kontrak": 11475945234, "bayar": 0}], "prk": [{"prk": "2019.WNTB.3.016", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 5486342, "aki": 5486342, "ai_lkai": 5486342, "aki_lkai": 5486342, "kontrak": 5486342, "bayar": 0}, {"prk": "2019.WNTB.3.021", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 93913992, "aki": 93913992, "ai_lkai": 93913992, "aki_lkai": 93913992, "kontrak": 93913992, "bayar": 0}, {"prk": "2019.WNTB.3.022", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 67861071, "aki": 67861071, "ai_lkai": 67861071, "aki_lkai": 67861071, "kontrak": 67861071, "bayar": 0}, {"prk": "2019.WNTB.3.023", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 3805524, "aki": 3805524, "ai_lkai": 3805524, "aki_lkai": 3805524, "kontrak": 3805524, "bayar": 0}, {"prk": "2019.WNTB.3.025", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 10612044, "aki": 10612044, "ai_lkai": 10612044, "aki_lkai": 10612044, "kontrak": 10612044, "bayar": 0}, {"prk": "2019.WNTB.3.027", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 12787700, "aki": 12787700, "ai_lkai": 12787700, "aki_lkai": 12787700, "kontrak": 12787700, "bayar": 0}, {"prk": "2021.WNTB.9.012", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 205857379, "aki": 0, "ai_lkai": 205857379, "aki_lkai": 0, "kontrak": 205857379, "bayar": 0}, {"prk": "2022.WNTB.11.002", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 26212122, "aki": 26212122, "ai_lkai": 26212122, "aki_lkai": 26212122, "kontrak": 0, "bayar": 0}, {"prk": "2022.WNTB.11.003", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 72096060, "aki": 72096060, "ai_lkai": 72096060, "aki_lkai": 72096060, "kontrak": 0, "bayar": 0}, {"prk": "2022.WNTB.11.004", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 10553014, "aki": 0, "ai_lkai": 10553014, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2022.WNTB.13.001", "status": "Lanjutan", "program": "Lisdes", "ai": 280741980, "aki": 0, "ai_lkai": 280741980, "aki_lkai": 0, "kontrak": 280741980, "bayar": 0}, {"prk": "2022.WNTB.5.011", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 1133865513, "aki": 1007880456, "ai_lkai": 1133865513, "aki_lkai": 1007880456, "kontrak": 1133865513, "bayar": 881895400}, {"prk": "2023.WNTB.11.001", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 29819611, "aki": 29819611, "ai_lkai": 29819611, "aki_lkai": 29819611, "kontrak": 9207503, "bayar": 848947}, {"prk": "2023.WNTB.11.005", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 109659564, "aki": 109659564, "ai_lkai": 109659564, "aki_lkai": 109659564, "kontrak": 377400, "bayar": 377400}, {"prk": "2023.WNTB.13.001", "status": "Lanjutan", "program": "Lisdes", "ai": 3389852170, "aki": 0, "ai_lkai": 3389852170, "aki_lkai": 0, "kontrak": 3389852170, "bayar": 0}, {"prk": "2023.WNTB.5.031", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 873570000, "aki": 499615900, "ai_lkai": 873570000, "aki_lkai": 499615900, "kontrak": 873570000, "bayar": 0}, {"prk": "2023.WNTB.7.001", "status": "Lanjutan", "program": "Pemasaran", "ai": 283900260, "aki": 100000000, "ai_lkai": 283900260, "aki_lkai": 100000000, "kontrak": 189810, "bayar": 0}, {"prk": "2023.WNTB.7.002", "status": "Lanjutan", "program": "Pemasaran", "ai": 64233469, "aki": 64233469, "ai_lkai": 64233469, "aki_lkai": 64233469, "kontrak": 0, "bayar": 0}, {"prk": "2023.WNTB.7.002.2", "status": "Lanjutan", "program": "Pemasaran", "ai": 2338706, "aki": 2338706, "ai_lkai": 2338706, "aki_lkai": 2338706, "kontrak": 0, "bayar": 0}, {"prk": "2023.WNTB.9.002", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 110344490, "aki": 110344490, "ai_lkai": 110344490, "aki_lkai": 110344490, "kontrak": 17790298, "bayar": 10212786}, {"prk": "2023.WNTB.9.005", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 1031929476, "aki": 130545950, "ai_lkai": 1031929476, "aki_lkai": 130545950, "kontrak": 69146858, "bayar": 17140987}, {"prk": "2023.WNTB.9.006", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 6181914, "aki": 6181914, "ai_lkai": 6181914, "aki_lkai": 6181914, "kontrak": 5699096, "bayar": 5699096}, {"prk": "2024.WNTB.14.002", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 6759445487, "aki": 5743724151, "ai_lkai": 6759445487, "aki_lkai": 5743724151, "kontrak": 6759445487, "bayar": 5023791134}, {"prk": "2024.WNTB.14.016", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 293465525, "aki": 293465525, "ai_lkai": 293465525, "aki_lkai": 293465525, "kontrak": 293465525, "bayar": 293465524}, {"prk": "2024.WNTB.14.019", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 41900000000, "aki": 41900000000, "ai_lkai": 41900000000, "aki_lkai": 41900000000, "kontrak": 41900000000, "bayar": 37710000000}, {"prk": "2024.WNTB.14.020", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 69930000, "aki": 0, "ai_lkai": 69930000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.14.022", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 17346059564, "aki": 16766108616, "ai_lkai": 17346059564, "aki_lkai": 16766108616, "kontrak": 17346059564, "bayar": 0}, {"prk": "2024.WNTB.4.001", "status": "Lanjutan", "program": "Evakuasi Daya dan Perluasan JTM", "ai": 664102972, "aki": 150000000, "ai_lkai": 664102972, "aki_lkai": 150000000, "kontrak": 32285146, "bayar": 33726337}, {"prk": "2024.WNTB.4.002", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 1917649935, "aki": 1917649935, "ai_lkai": 1917649935, "aki_lkai": 1917649935, "kontrak": 1856023199, "bayar": 551289862}, {"prk": "2024.WNTB.4.003", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 6235212522, "aki": 4114801312, "ai_lkai": 6235212522, "aki_lkai": 4114801312, "kontrak": 4215235082, "bayar": 2405538691}, {"prk": "2024.WNTB.4.004", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 45073863, "aki": 45073863, "ai_lkai": 45073863, "aki_lkai": 45073863, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.4.006", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 41776740, "aki": 41776740, "ai_lkai": 41776740, "aki_lkai": 41776740, "kontrak": 0, "bayar": 24252150}, {"prk": "2024.WNTB.4.007", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 2859509144, "aki": 2859509144, "ai_lkai": 2859509144, "aki_lkai": 2859509144, "kontrak": 2859509144, "bayar": 2859509144}, {"prk": "2024.WNTB.4.008", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 1668727450, "aki": 1668727450, "ai_lkai": 1668727450, "aki_lkai": 1668727450, "kontrak": 1668727450, "bayar": 518866664}, {"prk": "2024.WNTB.5.001", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 407693824, "aki": 100000000, "ai_lkai": 407693824, "aki_lkai": 100000000, "kontrak": 4647914, "bayar": 0}, {"prk": "2024.WNTB.5.002", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 2105527, "aki": 2105527, "ai_lkai": 2105527, "aki_lkai": 2105527, "kontrak": 2068919, "bayar": 2068919}, {"prk": "2024.WNTB.5.003", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 2396363913, "aki": 1547185649, "ai_lkai": 2396363913, "aki_lkai": 1547185649, "kontrak": 2129260387, "bayar": 517646995}, {"prk": "2024.WNTB.5.004", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 1486458213, "aki": 200000000, "ai_lkai": 1486458213, "aki_lkai": 200000000, "kontrak": 55084351, "bayar": 30211240}, {"prk": "2024.WNTB.5.005", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 957492384, "aki": 300000000, "ai_lkai": 957492384, "aki_lkai": 300000000, "kontrak": 84409831, "bayar": 7254420}, {"prk": "2024.WNTB.5.006", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 14861789, "aki": 14861789, "ai_lkai": 14861789, "aki_lkai": 14861789, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.7.001", "status": "Lanjutan", "program": "Pemasaran", "ai": 2831139203, "aki": 898683522, "ai_lkai": 2831139203, "aki_lkai": 898683522, "kontrak": 548831615, "bayar": 100316540}, {"prk": "2024.WNTB.7.002", "status": "Lanjutan", "program": "Pemasaran", "ai": 408373484, "aki": 100000000, "ai_lkai": 408373484, "aki_lkai": 100000000, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.7.002.2", "status": "Lanjutan", "program": "Pemasaran", "ai": 2619918, "aki": 2619918, "ai_lkai": 2619918, "aki_lkai": 2619918, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.7.004", "status": "Lanjutan", "program": "Pemasaran", "ai": 9835905, "aki": 9835905, "ai_lkai": 9835905, "aki_lkai": 9835905, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.7.005.2", "status": "Lanjutan", "program": "Pemasaran", "ai": 797736, "aki": 797736, "ai_lkai": 797736, "aki_lkai": 797736, "kontrak": 0, "bayar": 0}, {"prk": "2024.WNTB.8.001", "status": "Lanjutan", "program": "Sertifikasi Aset", "ai": 27019, "aki": 0, "ai_lkai": 27019, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2025.WNTB.1.001", "status": "Lanjutan", "program": "Pemasaran", "ai": 51569062976, "aki": 44156682880, "ai_lkai": 51569062976, "aki_lkai": 44156682880, "kontrak": 37236310159, "bayar": 32710031773}, {"prk": "2025.WNTB.1.001.8400", "status": "Lanjutan", "program": "Pemasaran", "ai": 397865982, "aki": 397865982, "ai_lkai": 397865982, "aki_lkai": 397865982, "kontrak": 0, "bayar": 224636577}, {"prk": "2025.WNTB.1.002", "status": "Lanjutan", "program": "Pemasaran", "ai": 39232241407, "aki": 39159272271, "ai_lkai": 39232241407, "aki_lkai": 39159272271, "kontrak": 37857910091, "bayar": 34015181030}, {"prk": "2025.WNTB.1.002.8400", "status": "Lanjutan", "program": "Pemasaran", "ai": 86000077, "aki": 86000077, "ai_lkai": 86000077, "aki_lkai": 86000077, "kontrak": 0, "bayar": 0}, {"prk": "2025.WNTB.1.003", "status": "Lanjutan", "program": "Pemasaran", "ai": 441032327, "aki": 441032327, "ai_lkai": 441032327, "aki_lkai": 441032327, "kontrak": 353964015, "bayar": 353964015}, {"prk": "2025.WNTB.12.001", "status": "Lanjutan", "program": "Infrastruktur K3L", "ai": 4439390609, "aki": 4363503477, "ai_lkai": 4439390609, "aki_lkai": 4363503477, "kontrak": 4144548264, "bayar": 4165497504}, {"prk": "2025.WNTB.15.002", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 5199626379, "aki": 5196884358, "ai_lkai": 5199626379, "aki_lkai": 5196884358, "kontrak": 5130284358, "bayar": 5130284358}, {"prk": "2025.WNTB.15.003", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 8267280000, "aki": 8180853180, "ai_lkai": 8267280000, "aki_lkai": 8180853180, "kontrak": 8150923140, "bayar": 8121307600}, {"prk": "2025.WNTB.15.004", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 6903383040, "aki": 6521147825, "ai_lkai": 6903383040, "aki_lkai": 6521147825, "kontrak": 6831671490, "bayar": 6515734325}, {"prk": "2025.WNTB.15.005", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 1972001580, "aki": 1944523974, "ai_lkai": 1972001580, "aki_lkai": 1944523974, "kontrak": 1944523974, "bayar": 1944523974}, {"prk": "2025.WNTB.15.006", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 9697143150, "aki": 8628943974, "ai_lkai": 9697143150, "aki_lkai": 8628943974, "kontrak": 9083098920, "bayar": 8628943974}, {"prk": "2025.WNTB.15.007", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 274412407, "aki": 120128307, "ai_lkai": 274412407, "aki_lkai": 120128307, "kontrak": 120128307, "bayar": 120128307}, {"prk": "2025.WNTB.15.008", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 1143106400, "aki": 920495900, "ai_lkai": 1143106400, "aki_lkai": 920495900, "kontrak": 920495900, "bayar": 920495900}, {"prk": "2025.WNTB.15.009", "status": "Lanjutan", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 24552401, "aki": 0, "ai_lkai": 24552401, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2025.WNTB.16.003", "status": "Lanjutan", "program": "Sarana Umum & Infrastruktur K3L Transmisi", "ai": 12120499000, "aki": 11227179249, "ai_lkai": 12120499000, "aki_lkai": 11227179249, "kontrak": 11818083420, "bayar": 0}, {"prk": "2025.WNTB.16.004", "status": "Lanjutan", "program": "Sarana Umum & Infrastruktur K3L Transmisi", "ai": 8082488000, "aki": 6748800000, "ai_lkai": 8082488000, "aki_lkai": 6748800000, "kontrak": 7104000000, "bayar": 6748800000}, {"prk": "2025.WNTB.2.001", "status": "Lanjutan", "program": "Evakuasi Daya dan Perluasan JTM", "ai": 6151513750, "aki": 5808293854, "ai_lkai": 6151513750, "aki_lkai": 5808293854, "kontrak": 5682347470, "bayar": 5278754632}, {"prk": "2025.WNTB.4.001", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 1493860107, "aki": 1375781660, "ai_lkai": 1493860107, "aki_lkai": 1375781660, "kontrak": 1374952405, "bayar": 1375781660}, {"prk": "2025.WNTB.4.002", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 3813815029, "aki": 3644426965, "ai_lkai": 3813815029, "aki_lkai": 3644426965, "kontrak": 3514677665, "bayar": 3293116383}, {"prk": "2025.WNTB.4.003", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 1101858852, "aki": 1063529171, "ai_lkai": 1101858852, "aki_lkai": 1063529171, "kontrak": 1063529172, "bayar": 1063529172}, {"prk": "2025.WNTB.4.004", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 11197492178, "aki": 9722912281, "ai_lkai": 11197492178, "aki_lkai": 9722912281, "kontrak": 10707325674, "bayar": 6878604075}, {"prk": "2025.WNTB.4.005", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 11406808627, "aki": 11091917976, "ai_lkai": 11406808627, "aki_lkai": 11091917976, "kontrak": 10894740467, "bayar": 9249658006}, {"prk": "2025.WNTB.4.005.8400", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 44647759, "aki": 44647759, "ai_lkai": 44647759, "aki_lkai": 44647759, "kontrak": 0, "bayar": 0}, {"prk": "2025.WNTB.4.006", "status": "Lanjutan", "program": "Keandalan Distribusi", "ai": 2785282500, "aki": 2693990979, "ai_lkai": 2785282500, "aki_lkai": 2693990979, "kontrak": 2693990979, "bayar": 0}, {"prk": "2025.WNTB.5.001", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 2842616355, "aki": 2663136885, "ai_lkai": 2842616355, "aki_lkai": 2663136885, "kontrak": 2632337202, "bayar": 2625229055}, {"prk": "2025.WNTB.5.002", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 3309819028, "aki": 1454330789, "ai_lkai": 3309819028, "aki_lkai": 1454330789, "kontrak": 2732910620, "bayar": 368812473}, {"prk": "2025.WNTB.5.003", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 12670925413, "aki": 12644412852, "ai_lkai": 12670925413, "aki_lkai": 12644412852, "kontrak": 11939692718, "bayar": 10877102348}, {"prk": "2025.WNTB.5.004", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 370265991, "aki": 199925177, "ai_lkai": 370265991, "aki_lkai": 199925177, "kontrak": 127779973, "bayar": 103029021}, {"prk": "2025.WNTB.5.008", "status": "Lanjutan", "program": "Efisiensi Distribusi", "ai": 11339114440, "aki": 9339458075, "ai_lkai": 11339114440, "aki_lkai": 9339458075, "kontrak": 8159440684, "bayar": 6726505843}, {"prk": "2025.WNTB.6.001", "status": "Lanjutan", "program": "Sarana Penunjang Distribusi", "ai": 502331877, "aki": 455100000, "ai_lkai": 502331877, "aki_lkai": 455100000, "kontrak": 455100000, "bayar": 455100000}, {"prk": "2025.WNTB.8.001", "status": "Lanjutan", "program": "Sertifikasi Aset", "ai": 146479992, "aki": 146479992, "ai_lkai": 146479992, "aki_lkai": 146479992, "kontrak": 146479000, "bayar": 49635504}, {"prk": "2026.WNTB.1.001", "status": "Murni", "program": "Pemasaran", "ai": 202380252214, "aki": 73570796904, "ai_lkai": 202380252214, "aki_lkai": 73570796904, "kontrak": 172368358243, "bayar": 21979170942}, {"prk": "2026.WNTB.1.002", "status": "Murni", "program": "Pemasaran", "ai": 42149550000, "aki": 16859820000, "ai_lkai": 36755033613, "aki_lkai": 16859820000, "kontrak": 28068208460, "bayar": 1460881561}, {"prk": "2026.WNTB.1.003", "status": "Murni", "program": "Pemasaran", "ai": 3593632695, "aki": 2055482350, "ai_lkai": 3593632695, "aki_lkai": 2055482350, "kontrak": 588185041, "bayar": 440903730}, {"prk": "2026.WNTB.15.001", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 2936199750, "aki": 0, "ai_lkai": 2936199750, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.002", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 4417620925, "aki": 0, "ai_lkai": 4417620925, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.006", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 6754572000, "aki": 0, "ai_lkai": 6754572000, "aki_lkai": 0, "kontrak": 391820010, "bayar": 0}, {"prk": "2026.WNTB.15.007", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 3955841812, "aki": 0, "ai_lkai": 3955841812, "aki_lkai": 0, "kontrak": 7185030000, "bayar": 0}, {"prk": "2026.WNTB.15.008", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 5092324450, "aki": 0, "ai_lkai": 5092324450, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.009", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 3823333000, "aki": 0, "ai_lkai": 3823333000, "aki_lkai": 0, "kontrak": 3620043000, "bayar": 0}, {"prk": "2026.WNTB.15.010", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 5472522000, "aki": 0, "ai_lkai": 5472522000, "aki_lkai": 0, "kontrak": 2702628000, "bayar": 0}, {"prk": "2026.WNTB.15.011", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 1765352000, "aki": 0, "ai_lkai": 1765352000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.012", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 2837175000, "aki": 0, "ai_lkai": 2837175000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.013", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 5027774000, "aki": 0, "ai_lkai": 5027774000, "aki_lkai": 0, "kontrak": 4956828210, "bayar": 0}, {"prk": "2026.WNTB.15.014", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 3093436800, "aki": 0, "ai_lkai": 3093436800, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.015", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 4728030000, "aki": 0, "ai_lkai": 4728030000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.15.016", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 4838445600, "aki": 0, "ai_lkai": 4838445600, "aki_lkai": 0, "kontrak": 3307800000, "bayar": 0}, {"prk": "2026.WNTB.15.017", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 7038998400, "aki": 0, "ai_lkai": 7038998400, "aki_lkai": 0, "kontrak": 3211317024, "bayar": 0}, {"prk": "2026.WNTB.15.019", "status": "Murni", "program": "Keandalan dan Pemeliharaan Transmisi", "ai": 2675100000, "aki": 0, "ai_lkai": 2675100000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.17.001", "status": "Murni", "program": "Keandalan dan Pemeliharaan Gardu Induk", "ai": 16785273000, "aki": 0, "ai_lkai": 16785273000, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "2026.WNTB.2.001", "status": "Murni", "program": "Evakuasi Daya dan Perluasan JTM", "ai": 17745628657, "aki": 7098251463, "ai_lkai": 17745628657, "aki_lkai": 7098251463, "kontrak": 17387329057, "bayar": 2164578466}, {"prk": "2026.WNTB.4.001", "status": "Murni", "program": "Keandalan Distribusi", "ai": 4652145461, "aki": 1860858184, "ai_lkai": 4652145461, "aki_lkai": 1860858184, "kontrak": 3810266697, "bayar": 1129662773}, {"prk": "2026.WNTB.4.002", "status": "Murni", "program": "Keandalan Distribusi", "ai": 8916009606, "aki": 3566403842, "ai_lkai": 8916009606, "aki_lkai": 3566403842, "kontrak": 8555179415, "bayar": 3002393650}, {"prk": "2026.WNTB.4.003", "status": "Murni", "program": "Keandalan Distribusi", "ai": 8362804744, "aki": 3345121898, "ai_lkai": 8362804744, "aki_lkai": 3345121898, "kontrak": 802009757, "bayar": 306249101}, {"prk": "2026.WNTB.4.004", "status": "Murni", "program": "Keandalan Distribusi", "ai": 56561047436, "aki": 15837093283, "ai_lkai": 56561047436, "aki_lkai": 15837093283, "kontrak": 35325801489, "bayar": 5300581374}, {"prk": "2026.WNTB.4.005", "status": "Murni", "program": "Keandalan Distribusi", "ai": 24003623419, "aki": 5760869621, "ai_lkai": 24003623419, "aki_lkai": 5760869621, "kontrak": 21684919701, "bayar": 5459397839}, {"prk": "2026.WNTB.5.001", "status": "Murni", "program": "Efisiensi Distribusi", "ai": 899261909, "aki": 359704764, "ai_lkai": 899261909, "aki_lkai": 359704764, "kontrak": 434515050, "bayar": 0}, {"prk": "2026.WNTB.5.003", "status": "Murni", "program": "Efisiensi Distribusi", "ai": 29567158554, "aki": 9461490738, "ai_lkai": 29567158554, "aki_lkai": 9461490738, "kontrak": 25899628476, "bayar": 8847142516}, {"prk": "2026.WNTB.5.004", "status": "Murni", "program": "Efisiensi Distribusi", "ai": 19461319089, "aki": 7784527636, "ai_lkai": 19461319089, "aki_lkai": 7784527636, "kontrak": 14439596659, "bayar": 5353540396}, {"prk": "2026.WNTB.5.005", "status": "Murni", "program": "Efisiensi Distribusi", "ai": 15372112292, "aki": 6148844917, "ai_lkai": 15372112292, "aki_lkai": 6148844917, "kontrak": 11470416733, "bayar": 2158498493}, {"prk": "2026.WNTB.5.007", "status": "Murni", "program": "Efisiensi Distribusi", "ai": 71219428011, "aki": 49853599608, "ai_lkai": 71219428011, "aki_lkai": 49853599608, "kontrak": 65869339533, "bayar": 40620171804}, {"prk": "2026.WNTB.6.001", "status": "Murni", "program": "Sarana Penunjang Distribusi", "ai": 4529605606, "aki": 1811842242, "ai_lkai": 4529605606, "aki_lkai": 1811842242, "kontrak": 4165285989, "bayar": 1200787500}, {"prk": "2026.WNTB.8.001", "status": "Murni", "program": "Sertifikasi Aset", "ai": 239509752, "aki": 239509752, "ai_lkai": 239509752, "aki_lkai": 239509752, "kontrak": 90000000, "bayar": 216769882}, {"prk": "2026.WNTB.9.002", "status": "Murni", "program": "SLO Distribusi", "ai": 3247531101, "aki": 0, "ai_lkai": 3247531101, "aki_lkai": 0, "kontrak": 3247531101, "bayar": 0}, {"prk": "2026.WNTB.1.002.8400", "status": "Murni", "program": "Pemasaran", "ai": 0, "aki": 0, "ai_lkai": 5394516387, "aki_lkai": 0, "kontrak": 0, "bayar": 0}, {"prk": "Belum teralokasi PRK (Murni)", "status": "Murni", "program": "Belum teralokasi PRK", "ai": 0, "aki": 2736465518, "ai_lkai": 0, "aki_lkai": 2736465518, "kontrak": 0, "bayar": 0}], "rencana": [{"status": "Lanjutan", "bulan": [5168056384, 69775804, 19119009587, 26979732957, 45506603502, 35231055335, 49489591414, 21033359176, 10895930783, 18383976559, 15602237859, 24510350671]}, {"status": "Murni", "bulan": [0, 0, 0, 0, 59954924, 22675905389, 14439385801, 25992517416, 39636629868, 42854426315, 37230193782, 34943969086]}], "realisasi": [{"unit": "UP3 SUMBAWA", "status": "Lanjutan", "bulan": [127203375, 0, 3391802095, 532355965, 1835045871, 1239405028, 920601623, 761049245, 1340070988, 0, 0, 0]}, {"unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Lanjutan", "bulan": [2306027565, 0, 9285545307, 8747396158, 6823897312, 366491052, 6734542963, 8151660665, 27503751, 0, 0, 0]}, {"unit": "UP3 BIMA", "status": "Lanjutan", "bulan": [208690937, 0, 808815133, 237855992, 1164189798, 253014538, 2780270979, 656635191, 213809145, 0, 0, 0]}, {"unit": "UP3 MATARAM", "status": "Lanjutan", "bulan": [302197585, 69775804, 1726596923, 2036661455, 5517056804, 3585652059, 4811251862, 3883535028, 4076606723, 0, 0, 0]}, {"unit": "UP3 SELAPARANG", "status": "Lanjutan", "bulan": [415596677, 0, 1455744080, 383478985, 1310063745, 1356361322, 2517738802, 1505003161, 57638596, 0, 0, 0]}, {"unit": "UP2D NTB", "status": "Lanjutan", "bulan": [138993225, 0, 0, 3069131872, 5243422757, 577809214, 322104555, 31302596, 0, 0, 0, 0]}, {"unit": "KANWIL - Transmisi & Distribusi", "status": "Lanjutan", "bulan": [1274443680, 0, 0, 4631727520, 3654377457, 26634650277, 26164759752, 3725437058, 457828608, 0, 0, 0]}, {"unit": "UP2B NTB", "status": "Lanjutan", "bulan": [373954100, 0, 0, 482532400, 64009400, 773446101, 108449299, 0, 0, 0, 0, 0]}, {"unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Lanjutan", "bulan": [20949240, 0, 0, 49635504, 0, 0, 0, 0, 0, 0, 0, 0]}, {"unit": "UPT MATARAM", "status": "Lanjutan", "bulan": [0, 0, 2450506049, 6808957106, 19894540358, 444225744, 5129871579, 2318736232, 162885470, 0, 0, 0]}, {"unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Murni", "bulan": [0, 0, 0, 0, 59954924, 59998438, 36818150, 29998370, 30000000, 0, 0, 0]}, {"unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 22615906951, 12631067973, 17680284829, 17010750523, 0, 0, 0]}, {"unit": "UP3 SUMBAWA", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 898868203, 1736521561, 615674309, 0, 0, 0]}, {"unit": "UP3 BIMA", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 168816875, 785670605, 3072374201, 0, 0, 0]}, {"unit": "UP3 MATARAM", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 625014600, 2435173720, 2042362098, 0, 0, 0]}, {"unit": "UP3 SELAPARANG", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 78800000, 291500130, 1326254330, 0, 0, 0]}, {"unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 0, 2862804793, 12015888148, 0, 0, 0]}, {"unit": "UP2D NTB", "status": "Murni", "bulan": [0, 0, 0, 0, 0, 0, 0, 170563408, 364635193, 0, 0, 0]}], "komitmen": [{"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 297453693, "realisasi": 297453693}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 326295023, "realisasi": 326295023}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 313932420, "realisasi": 313932420}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 170826869, "realisasi": 170826869}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 66111589, "realisasi": 66111589}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 40304755, "realisasi": 40304755}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 3090140, "realisasi": 3090140}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 2086978, "realisasi": 2086978}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 3806112, "realisasi": 3806112}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 802530, "realisasi": 802530}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 601498, "realisasi": 601498}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 3004826, "realisasi": 3004826}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 190673136, "realisasi": 190673136}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 90693676, "realisasi": 90693676}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 94717961, "realisasi": 94717961}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 69756698, "realisasi": 69756698}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 375260697, "realisasi": 375260697}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 32961956, "realisasi": 32961956}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 1950891600, "realisasi": 1950891600}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 3475521000, "realisasi": 3475521000}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 1216432350, "realisasi": 1216432350}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 53517096, "realisasi": 53517096}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 119259288, "realisasi": 119259288}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Lanjutan", "minggu": 2, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 2693990979, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Pembayaran Lunas", "rencana": 132744722, "realisasi": 132744722}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Pembayaran Lunas", "rencana": 37426746, "realisasi": 37426746}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Pembayaran Lunas", "rencana": 16634109, "realisasi": 16634109}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 42194330, "realisasi": 42194330}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 429057213, "realisasi": 429057213}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Pembayaran Lunas", "rencana": 72081140, "realisasi": 72081140}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 334642800, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 378531090, "realisasi": 378531090}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 521088390, "realisasi": 521088390}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 256378143, "realisasi": 256378143}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 4, "tahap": "Persetujuan User Sudah Diverifikasi", "rencana": 99789000, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 72161100, "realisasi": 72161100}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 97954725, "realisasi": 97954725}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 156387826, "realisasi": 156387826}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 161892390, "realisasi": 161892390}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 1248084000, "realisasi": 1248084000}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 10297251117, "realisasi": 10297251117}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 566396370, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Persetujuan User Sedang Didraf", "rencana": 1225970469, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 1126969902, "realisasi": 1126969902}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 273767070, "realisasi": 273767070}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 770897220, "realisasi": 770897220}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 210358320, "realisasi": 210358320}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Lanjutan", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 185195419, "realisasi": 185195419}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Lanjutan", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 436966485, "realisasi": 436966485}, {"bulan": 9, "unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 346101552, "realisasi": 346101552}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 223708512, "realisasi": 223708512}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 12596746, "realisasi": 12596746}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 16365840, "realisasi": 16365840}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 72238800, "realisasi": 72238800}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 40803600, "realisasi": 40803600}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 663169, "realisasi": 663169}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 49173000, "realisasi": 49173000}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 53880732, "realisasi": 53880732}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 55330670, "realisasi": 55330670}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 1, "tahap": "Pembayaran Lunas", "rencana": 52092300, "realisasi": 52092300}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 16280971, "realisasi": 16280971}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 178998600, "realisasi": 178998600}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 16103872, "realisasi": 16103872}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 239760000, "realisasi": 239760000}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 16326655, "realisasi": 16326655}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 44272508, "realisasi": 43946290}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 61551165, "realisasi": 61551165}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 302500027, "realisasi": 302500027}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 211498377, "realisasi": 211498377}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 64463139, "realisasi": 64463139}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 66575691, "realisasi": 66575691}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 69551856, "realisasi": 69551856}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 217560000, "realisasi": 217560000}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 32478600, "realisasi": 32478600}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 22985042, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 15921054, "realisasi": 15921054}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 46518879, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 3, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 44599800, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 156510000, "realisasi": 156510000}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Persetujuan User Sudah Diverifikasi", "rencana": 21411900, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 104872800, "realisasi": 104872800}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 2597856, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 3, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 6749966, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 4, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 189810, "realisasi": 0}, {"bulan": 9, "unit": "UP3 MATARAM", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 3587252, "realisasi": 3587252}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 18448200, "realisasi": 18448200}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 17876550, "realisasi": 17876550}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 50581590, "realisasi": 50581590}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 122214330, "realisasi": 122214330}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 87855390, "realisasi": 87855390}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Lanjutan", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 26858337, "realisasi": 26858337}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 39796830, "realisasi": 0}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 96826299, "realisasi": 96826299}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 186480000, "realisasi": 186480000}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Belum Input VIP", "rencana": 319546190, "realisasi": 0}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 195607641, "realisasi": 195607641}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 206948789, "realisasi": 206948788}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 177957420, "realisasi": 0}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Belum Input VIP", "rencana": 277017150, "realisasi": 0}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 125541000, "realisasi": 125541000}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 38128500, "realisasi": 38128500}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 483714690, "realisasi": 483714690}, {"bulan": 9, "unit": "UP3 SELAPARANG", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 124420455, "realisasi": 124420455}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Lanjutan", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 73992001, "realisasi": 3699601}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 8663041, "realisasi": 8663040}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 118665103, "realisasi": 118665103}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Persetujuan User Sudah Diverifikasi", "rencana": 252235534, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 95615167, "realisasi": 95615167}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 209409314, "realisasi": 209409314}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 9061821, "realisasi": 9061821}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 152661390, "realisasi": 152661389}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 75822445, "realisasi": 75822445}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 237498565, "realisasi": 237498565}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 326036970, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 124445430, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Lanjutan", "minggu": 4, "tahap": "Dokumen Tagihan Sudah Disubmit", "rencana": 50570490, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Lanjutan", "minggu": 4, "tahap": "Dokumen Tagihan Perlu Diperbaharui", "rencana": 219765607, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 497244480, "realisasi": 497244480}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 499703130, "realisasi": 499703130}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 156321300, "realisasi": 156321300}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 217139310, "realisasi": 217139310}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 190588110, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Persetujuan User Sedang Didraf", "rencana": 62574856, "realisasi": 0}, {"bulan": 9, "unit": "UP3 BIMA", "status": "Murni", "minggu": 4, "tahap": "Pembayaran Lunas", "rencana": 192640110, "realisasi": 192640110}, {"bulan": 9, "unit": "UP2D NTB", "status": "Murni", "minggu": 2, "tahap": "Pembayaran Lunas", "rencana": 88000000, "realisasi": 88000000}, {"bulan": 9, "unit": "UP2D NTB", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 137414622, "realisasi": 137414622}, {"bulan": 9, "unit": "UP2D NTB", "status": "Murni", "minggu": 4, "tahap": "Belum Input VIP", "rencana": 149189439, "realisasi": 0}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 4676694, "realisasi": 4676694}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 6600492, "realisasi": 6600492}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 3209951, "realisasi": 3209951}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 13539113, "realisasi": 13539113}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 2409377, "realisasi": 2409378}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 543669670, "realisasi": 543669670}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 19039881, "realisasi": 19039881}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 95778046, "realisasi": 95778046}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 47787700, "realisasi": 47787700}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 95889819, "realisasi": 95889819}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 16602573, "realisasi": 16602573}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 258793022, "realisasi": 258793021}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Murni", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 232289700, "realisasi": 232289700}, {"bulan": 9, "unit": "UP3 SUMBAWA", "status": "Lanjutan", "minggu": 3, "tahap": "Pembayaran Lunas", "rencana": 275712418, "realisasi": 275712418}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 1700125340, "realisasi": 1700125340}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 76740802, "realisasi": 76740802}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 170954368, "realisasi": 170954368}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 640009350, "realisasi": 640009350}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 374793720, "realisasi": 374793720}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 173052275, "realisasi": 173052275}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 200180712, "realisasi": 200180712}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 79236684, "realisasi": 79236684}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 66536437, "realisasi": 66536437}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 149706983, "realisasi": 149706983}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 280233930, "realisasi": 280233930}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 642992364, "realisasi": 642992364}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 1, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 418576560, "realisasi": 418576560}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 66536437, "realisasi": 66536437}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 2, "tahap": "Tagihan sudah Diverifikasi di Keuangan Pusat", "rencana": 655889010, "realisasi": 655889010}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 601703805, "realisasi": 0}, {"bulan": 9, "unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "minggu": 3, "tahap": "Persetujuan User Sudah Disetujui", "rencana": 1335077475, "realisasi": 0}], "kontrak": [{"unit": "KANWIL - Transmisi & Distribusi", "status": "Murni", "jumlah": 262, "nilai": 164441409361, "terbayar": 69846551792, "pajak": 0, "luar": 91458484, "lunas": 49, "sebagian": 61, "belum": 152, "lewat": 166, "sisa_lewat": 59176353200}, {"unit": "UPT MATARAM", "status": "Murni", "jumlah": 7, "nilai": 11475945234, "terbayar": 0, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 0, "belum": 7, "lewat": 1, "sisa_lewat": 413586000}, {"unit": "UP2B NTB", "status": "Murni", "jumlah": 5, "nilai": 13899521010, "terbayar": 0, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 0, "belum": 5, "lewat": 0, "sisa_lewat": 0}, {"unit": "UP3 BIMA", "status": "Murni", "jumlah": 78, "nilai": 19144938286, "terbayar": 4021889376, "pajak": 0, "luar": 4972305, "lunas": 1, "sebagian": 15, "belum": 62, "lewat": 63, "sisa_lewat": 10561953321}, {"unit": "UP3 SUMBAWA", "status": "Lanjutan", "jumlah": 87, "nilai": 13143624399, "terbayar": 10147534190, "pajak": 0, "luar": 0, "lunas": 62, "sebagian": 11, "belum": 14, "lewat": 23, "sisa_lewat": 3084068335}, {"unit": "UP3 MATARAM", "status": "Murni", "jumlah": 165, "nilai": 30954815471, "terbayar": 5102550418, "pajak": 0, "luar": 0, "lunas": 2, "sebagian": 29, "belum": 134, "lewat": 75, "sisa_lewat": 5792783032}, {"unit": "UP2D NTB", "status": "Murni", "jumlah": 39, "nilai": 7605523929, "terbayar": 535198601, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 5, "belum": 34, "lewat": 24, "sisa_lewat": 2313298278}, {"unit": "KANWIL - Transmisi & Distribusi", "status": "Lanjutan", "jumlah": 70, "nilai": 94189653400, "terbayar": 62799023418, "pajak": 103043630, "luar": 3641157304, "lunas": 32, "sebagian": 16, "belum": 22, "lewat": 36, "sisa_lewat": 17289879426}, {"unit": "UP3 SELAPARANG", "status": "Murni", "jumlah": 122, "nilai": 24197571651, "terbayar": 1696554460, "pajak": 0, "luar": 0, "lunas": 1, "sebagian": 7, "belum": 114, "lewat": 103, "sisa_lewat": 17812891121}, {"unit": "UP3 SUMBAWA", "status": "Murni", "jumlah": 75, "nilai": 15099982235, "terbayar": 3251064073, "pajak": 0, "luar": 0, "lunas": 5, "sebagian": 8, "belum": 62, "lewat": 44, "sisa_lewat": 8549234176}, {"unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Murni", "jumlah": 114, "nilai": 152672330468, "terbayar": 14878692941, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 19, "belum": 95, "lewat": 93, "sisa_lewat": 120516767161}, {"unit": "UP2D NTB", "status": "Lanjutan", "jumlah": 37, "nilai": 9555866854, "terbayar": 9382764219, "pajak": 0, "luar": 0, "lunas": 31, "sebagian": 2, "belum": 4, "lewat": 5, "sisa_lewat": 182979301}, {"unit": "UPT MATARAM", "status": "Lanjutan", "jumlah": 15, "nilai": 50182713609, "terbayar": 37209722538, "pajak": 0, "luar": 0, "lunas": 9, "sebagian": 5, "belum": 1, "lewat": 6, "sisa_lewat": 12972991071}, {"unit": "KANWIL - Niaga & Pelayanan Pelanggan", "status": "Lanjutan", "jumlah": 62, "nilai": 41270010976, "terbayar": 40137037208, "pajak": 2306027565, "luar": 0, "lunas": 50, "sebagian": 10, "belum": 2, "lewat": 12, "sisa_lewat": 1171497428}, {"unit": "UP3 MATARAM", "status": "Lanjutan", "jumlah": 387, "nilai": 39904504140, "terbayar": 25877817645, "pajak": 131516598, "luar": 0, "lunas": 180, "sebagian": 86, "belum": 121, "lewat": 207, "sisa_lewat": 14161511223}, {"unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Murni", "jumlah": 2, "nilai": 90000000, "terbayar": 0, "pajak": 0, "luar": 216769882, "lunas": 0, "sebagian": 0, "belum": 2, "lewat": 2, "sisa_lewat": 90000000}, {"unit": "KANWIL - Keuangan, Komunikasi dan Umum", "status": "Lanjutan", "jumlah": 3, "nilai": 146479000, "terbayar": 0, "pajak": 20949240, "luar": 49635504, "lunas": 0, "sebagian": 0, "belum": 3, "lewat": 3, "sisa_lewat": 146479000}, {"unit": "UP3 BIMA", "status": "Lanjutan", "jumlah": 83, "nilai": 14465419361, "terbayar": 6201216083, "pajak": 92899728, "luar": 29165902, "lunas": 39, "sebagian": 8, "belum": 36, "lewat": 44, "sisa_lewat": 8379425939}, {"unit": "UP3 SELAPARANG", "status": "Lanjutan", "jumlah": 121, "nilai": 9094409680, "terbayar": 8725233677, "pajak": 276391691, "luar": 0, "lunas": 85, "sebagian": 26, "belum": 10, "lewat": 36, "sisa_lewat": 507280241}, {"unit": "UP2B NTB", "status": "Lanjutan", "jumlah": 4, "nilai": 2927931413, "terbayar": 1524451300, "pajak": 277940000, "luar": 0, "lunas": 1, "sebagian": 1, "belum": 2, "lewat": 3, "sisa_lewat": 1403480113}, {"unit": "UP2K NTB", "status": "Lanjutan", "jumlah": 6, "nilai": 1981590870, "terbayar": 0, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 0, "belum": 6, "lewat": 6, "sisa_lewat": 1981590870}, {"unit": "KANWIL - Perencanaan", "status": "Lanjutan", "jumlah": 3, "nilai": 1894860659, "terbayar": 0, "pajak": 0, "luar": 0, "lunas": 0, "sebagian": 0, "belum": 3, "lewat": 3, "sisa_lewat": 1894860659}]};
+const CONFIG = { url: '', key: 'UIWNTB-49EC0752DC2BB213' };
+const inGAS = !!(window.google && google.script && google.script.run);
+function conn(){ let u=CONFIG.url,k=CONFIG.key; try{u=localStorage.getItem('dash_url')||u;k=localStorage.getItem('dash_key')||k}catch(e){} return {url:(u||'').trim(),key:(k||'').trim()}; }
+function jsonp(url,key){
+  return new Promise((res,rej)=>{
+    const cb='__cb'+Date.now(), sc=document.createElement('script'); let done=false;
+    const end=()=>{delete window[cb]; sc.remove()};
+    window[cb]=r=>{done=true;end(); r&&r.ok?res(r.data):rej(new Error(r&&r.error||'Respon tidak valid'))};
+    sc.onerror=()=>{if(!done){end();rej(new Error('Tidak dapat terhubung ke Web App. Periksa URL, koneksi internet, dan pastikan deploy dengan akses "Anyone".'))}};
+    setTimeout(()=>{if(!done){end();rej(new Error('Waktu habis saat menghubungi Google Sheet.'))}},60000);
+    sc.src=url+(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+'&callback='+cb+'&t='+Date.now();
+    document.body.appendChild(sc);
+  });
+}
+function loadData(){
+  const L=$('loading'); L.style.display='grid'; L.innerHTML='Memuat data dari Google Sheet…'; $('btnLoad').disabled=true;
+  const ok=D=>{DATA=D; S.bulan=+D.meta.bulan||S.bulan; S.komBln=null; fillControls(); renderAll(); L.style.display='none'; $('btnLoad').disabled=false;
+    const w=(D.meta.peringatan||[]); $('warn').style.display=w.length?'block':'none'; $('warn').textContent=w.join(' · ')};
+  const fail=e=>{L.innerHTML='<div class="card" style="max-width:440px;text-align:left"><b>Gagal memuat data</b><div style="margin:6px 0 12px;color:var(--text-2)">'+esc(e&&e.message||e)+'</div>'+(inGAS?'':'<button class="btn" style="background:var(--ref);color:#fff" onclick="openConn()">⚙ Atur koneksi</button>')+'</div>';$('btnLoad').disabled=false};
+  if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getData(); return; }
+  if(window.__TEST_DATA__){ ok(window.__TEST_DATA__); return; }
+  const c=conn(); if(!c.url||!c.key){ ok(SNAPSHOT); return; }
+  jsonp(c.url,c.key).then(ok,fail);
+}
+function openConn(){
+  const c=conn(); $('loading').style.display='none';
+  $('cUrl').value=c.url; $('cKey').value=c.key; $('connBox').style.display='grid'; $('cUrl').focus();
+}
+function saveConn(){
+  const u=$('cUrl').value.trim(), k=$('cKey').value.trim();
+  if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(u)){ $('cMsg').textContent='URL harus berupa URL Web App Google Apps Script (https://script.google.com/macros/s/…/exec).'; return; }
+  if(!k){ $('cMsg').textContent='Kunci Akses wajib diisi (lihat sheet PENGATURAN).'; return; }
+  try{localStorage.setItem('dash_url',u);localStorage.setItem('dash_key',k)}catch(e){CONFIG.url=u;CONFIG.key=k}
+  $('connBox').style.display='none'; $('cMsg').textContent=''; loadData();
+}
+$('btnLoad').onclick=loadData; if(!inGAS){ $('btnConn').style.display=''; $('btnConn').onclick=openConn; }
+function toast(msg){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',right:'16px',bottom:'16px',background:css('--ref'),color:css('--surface'),padding:'10px 14px',borderRadius:'8px',fontSize:'12px',zIndex:60,maxWidth:'360px'});document.body.appendChild(t);setTimeout(()=>t.remove(),4000)}
+
+loadData();
+</script>
+</body>
+</html>
