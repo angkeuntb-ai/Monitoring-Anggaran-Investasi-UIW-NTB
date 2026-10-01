@@ -513,12 +513,29 @@ function conn(){
   try{ if(m){ localStorage.setItem('dash_key',decodeURIComponent(m[1])); history.replaceState(null,'',location.pathname+location.search); } k=k||localStorage.getItem('dash_key')||''; }catch(e){ if(m) k=k||decodeURIComponent(m[1]); }
   return {url:(u||'').trim(),key:(k||'').trim()};
 }
+/* ambil data: coba fetch (CORS) dulu, bila gagal pakai JSONP */
+async function ambil(url,key){
+  const q=(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+'&t='+Date.now();
+  try{
+    const r=await fetch(url+q,{redirect:'follow'}); const t=await r.text(); let j;
+    try{ j=JSON.parse(t); }catch(e){
+      if(/<html|<!doctype/i.test(t)) throw new Error(/accounts\.google|ServiceLogin|signin/i.test(t)
+        ? 'Web App meminta login Google. Ubah Deploy ▸ Manage deployments ▸ Who has access: "Anyone", lalu Deploy versi baru.'
+        : 'Web App belum memakai Code.gs terbaru (balasan berupa halaman, bukan data). Tempel ulang Code.gs terbaru lalu Deploy ▸ Manage deployments ▸ Edit ▸ New version.');
+      throw new Error('Respon Web App tidak dikenali.');
+    }
+    if(!j.ok) throw new Error(j.error||'Respon tidak valid'); return j.data;
+  }catch(e){
+    if(e && /Web App|Kunci|Respon/.test(e.message)) throw e;
+    return jsonp(url,key);   // fallback
+  }
+}
 function jsonp(url,key){
   return new Promise((res,rej)=>{
     const cb='__cb'+Date.now(), sc=document.createElement('script'); let done=false;
     const end=()=>{delete window[cb]; sc.remove()};
     window[cb]=r=>{done=true;end(); r&&r.ok?res(r.data):rej(new Error(r&&r.error||'Respon tidak valid'))};
-    sc.onerror=()=>{if(!done){end();rej(new Error('Tidak dapat terhubung ke Web App. Periksa URL, koneksi internet, dan pastikan deploy dengan akses "Anyone".'))}};
+    sc.onerror=()=>{if(!done){end();rej(new Error('Tidak dapat terhubung ke Web App. Kemungkinan: (1) Code.gs di Apps Script belum versi terbaru, atau (2) akses Deploy belum "Anyone". Cek dengan membuka URL Web App + ?api=1&key=KUNCI di browser.'))}};
     setTimeout(()=>{if(!done){end();rej(new Error('Waktu habis saat menghubungi Google Sheet.'))}},60000);
     sc.src=url+(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+'&callback='+cb+'&t='+Date.now();
     document.body.appendChild(sc);
@@ -532,7 +549,7 @@ function loadData(){
   if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getData(); return; }
   if(window.__TEST_DATA__){ ok(window.__TEST_DATA__); return; }
   const c=conn(); if(!c.url||/TEMPEL_URL/.test(c.url)||!c.key){ c.url=/TEMPEL_URL/.test(c.url)?'':c.url; if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); return; } fail(!c.url?'URL Web App belum diisi di index.html (baris CONFIG).':'Kunci akses belum ada. Buka dashboard melalui tautan yang berakhiran #k=KUNCI_AKSES.'); return; }
-  jsonp(c.url,c.key).then(ok,e=>{ if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); $('warn').style.display='block'; $('warn').textContent='Tidak dapat terhubung ke Google Sheet ('+(e&&e.message||e)+') — menampilkan data tersimpan.'; } else fail(e); });
+  ambil(c.url,c.key).then(ok,e=>{ if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); $('warn').style.display='block'; $('warn').textContent='Tidak dapat terhubung ke Google Sheet ('+(e&&e.message||e)+') — menampilkan data tersimpan.'; } else fail(e); });
 }
 
 function toast(msg){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',right:'16px',bottom:'16px',background:css('--ref'),color:css('--surface'),padding:'10px 14px',borderRadius:'8px',fontSize:'12px',zIndex:60,maxWidth:'360px'});document.body.appendChild(t);setTimeout(()=>t.remove(),4000)}
