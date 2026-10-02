@@ -564,7 +564,7 @@ function loadData(){
   const fail=e=>{L.innerHTML='<div class="card" style="max-width:440px;text-align:left"><b>Gagal memuat data</b><div style="margin:6px 0 12px;color:var(--text-2)">'+esc(e&&e.message||e)+'</div>'+'</div>'};
   if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getData(); return; }
   if(window.__TEST_DATA__){ ok(window.__TEST_DATA__); return; }
-  const c=conn(); if(!c.url||/TEMPEL_URL/.test(c.url)||!c.key){ c.url=/TEMPEL_URL/.test(c.url)?'':c.url; if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); return; } fail(!c.url?'URL Web App belum diisi di index.html (baris CONFIG).':'Kunci akses belum ada. Buka dashboard melalui tautan yang berakhiran #k=KUNCI_AKSES.'); return; }
+  const c=conn(); if(!c.url||/TEMPEL_URL/.test(c.url)){ c.url=/TEMPEL_URL/.test(c.url)?'':c.url; if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); return; } fail(!c.url?'URL Web App belum diisi di index.html (baris CONFIG).':'Kunci akses belum ada. Buka dashboard melalui tautan yang berakhiran #k=KUNCI_AKSES.'); return; }
   ambil(c.url,c.key).then(ok,e=>{ if(typeof SNAPSHOT!=='undefined'){ ok(SNAPSHOT); $('warn').style.display='block'; $('warn').textContent='Tidak dapat terhubung ke Google Sheet ('+(e&&e.message||e)+') — menampilkan data tersimpan.'; } else fail(e); });
 }
 
@@ -578,7 +578,7 @@ function bukaKontrak(unit){
   $('kMini').innerHTML=''; $('kTbl').innerHTML='<tbody><tr><td class="empty">Memuat daftar kontrak…</td></tr></tbody>'; K.data=null;
   const ok=d=>{K.data=d; renderKontrak()}, fail=e=>{$('kTbl').innerHTML='<tbody><tr><td class="empty">'+esc(e&&e.message||e)+'</td></tr></tbody>'};
   if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getKontrakUnit(unit,S.kon); return; }
-  const c=conn(); if(!c.url||!c.key||/TEMPEL_URL/.test(c.url)){ fail('Daftar kontrak hanya tersedia saat dashboard terhubung ke Google Sheet.'); return; }
+  const c=conn(); if(!c.url||/TEMPEL_URL/.test(c.url)){ fail('Daftar kontrak hanya tersedia saat dashboard terhubung ke Google Sheet.'); return; }
   ambil(c.url,c.key,'&unit='+encodeURIComponent(unit)+'&status='+encodeURIComponent(S.kon)).then(ok,fail);
 }
 function kRows(){
