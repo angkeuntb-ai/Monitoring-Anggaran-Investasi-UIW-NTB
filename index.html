@@ -126,6 +126,12 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
 .sdot{display:inline-block;width:14px;height:14px;border-radius:50%;box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--border)}.sdot.good{background:var(--good)}.sdot.warn{background:var(--proj)}.sdot.bad{background:var(--bad)}
 .c8{grid-column:span 8}
 .mini5{grid-template-columns:repeat(5,1fr)}
+.clk{cursor:pointer}.clk:hover td{background:color-mix(in srgb,var(--bayar) 10%,var(--surface))!important}.chev{display:inline-block;width:14px;color:var(--bayar);font-weight:700}
+#kModal{position:fixed;inset:0;display:none;place-items:center;background:rgba(10,20,40,.55);z-index:90;padding:16px}
+#kModal .box{background:var(--surface);border-radius:12px;width:min(1280px,100%);max-height:92vh;display:flex;flex-direction:column;padding:16px 18px;gap:10px}
+#kModal .tbl td.wrap{white-space:normal;min-width:240px;max-width:420px;text-align:left}
+.pill{display:inline-block;white-space:nowrap;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.pill.good{background:var(--good-bg);color:var(--good)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.mut{background:var(--surface-2);color:var(--text-2)}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 @media (max-width:1180px){.s84,.s57,.s444,.s66{grid-template-columns:1fr}.c6,.c4,.c8{grid-column:span 12}.scroll{max-height:420px}}
 @media (max-width:760px){
@@ -240,6 +246,15 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
 
   <footer><span id="src"></span><span>Rp · M = Miliar</span></footer>
 </main>
+<div id="kModal" role="dialog" aria-modal="true" aria-labelledby="kTitle"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2 id="kTitle" style="margin:0;font-size:16px">Daftar Kontrak</h2>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="seg" id="segKf"><button class="on" data-v="all">Semua</button><button data-v="open">Belum lunas</button><button data-v="late">Lewat batas</button><button data-v="lain">Pajak &amp; di luar daftar</button></span>
+    <input id="kCari" placeholder="Cari no. kontrak / pekerjaan / vendor…" style="height:30px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:0 10px;font:inherit;font-size:12px;min-width:240px">
+    <button class="btn" id="kCsv" style="background:var(--surface-2);color:var(--text);border-color:var(--border)">⤓ CSV</button>
+    <button class="btn" id="kClose" style="background:var(--ref);color:#fff" aria-label="Tutup">✕ Tutup</button></div></div>
+  <div class="mini" id="kMini" style="margin:0"></div>
+  <div class="scroll" style="flex:1;min-height:200px"><table class="tbl num" id="kTbl"></table></div>
+</div></div>
 <div class="tip" id="tip"></div>
 
 <div id="loading" style="position:fixed;inset:0;display:grid;place-items:center;background:color-mix(in srgb,var(--page) 80%,transparent);z-index:70;font-weight:600;color:var(--text-2)">Memuat data dari Google Sheet…</div>
@@ -457,11 +472,12 @@ function renderKon(){
     {indexAxis:'y',plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${c.raw} kontrak`,footer:it=>`Total ${rows[it[0].dataIndex].jumlah} kontrak`}}},
      scales:{x:{stacked:true,beginAtZero:true,ticks:{precision:0}},y:{stacked:true,grid:{display:false}}}});
   const st=o=>o.lewat===0?['good','Sesuai jadwal']:(P(o.sisa_lewat,o.nilai)>0.2?['bad','Kritis']:['warn','Perlu tindak lanjut']);
-  const line=(name,o,cls='')=>{const [c,l]=st(o);return `<tr class="${cls}"><td title="${esc(name)}">${esc(shortUnit(name))}</td><td>${o.jumlah}</td><td>${M(o.nilai)}</td><td>${M(o.terbayar)}</td><td>${o.pajak?M(o.pajak):'–'}</td><td>${o.luar?M(o.luar):'–'}</td><td><b>${M(o.real)}</b></td>
+  const line=(name,o,cls='')=>{const [c,l]=st(o);return `<tr class="${cls}${cls?'':' clk'}"${cls?'':` data-unit="${esc(name)}" title="Klik untuk melihat daftar kontrak"`}><td>${cls?'':'<span class="chev">▸</span>'}${esc(shortUnit(name))}</td><td>${o.jumlah}</td><td>${M(o.nilai)}</td><td>${M(o.terbayar)}</td><td>${o.pajak?M(o.pajak):'–'}</td><td>${o.luar?M(o.luar):'–'}</td><td><b>${M(o.real)}</b></td>
     <td><span class="cellbar"><i style="width:${Math.min(100,P(o.real,o.nilai)*100)}%;background:var(--bayar)"></i></span>${o.nilai?pct(P(o.real,o.nilai)):'–'}</td><td>${M(Math.max(0,o.nilai-o.terbayar))}</td>
     <td>${o.lunas}</td><td>${o.sebagian}</td><td>${o.belum}</td><td>${o.lewat||'–'}</td><td>${o.lewat?M(o.sisa_lewat):'–'}</td><td style="text-align:center"><span class="sdot ${c}" role="img" aria-label="${l}" data-tip="${l}"></span></td></tr>`};
   let h=`<thead><tr><th>Unit</th><th>Jml Kontrak</th><th>Nilai Kontrak (M)</th><th>Terbayar Kontrak (M)</th><th>Pajak (M)</th><th>Di Luar Daftar (M)</th><th>Total Realisasi (M)</th><th>% Realisasi</th><th>Sisa Kontrak (M)</th><th>Lunas</th><th>Sebagian</th><th>Belum Bayar</th><th>Lewat Batas</th><th>Sisa Lewat Batas (M)</th><th style="text-align:center">Status</th></tr></thead><tbody>`;
   rows.forEach(o=>h+=line(o.unit,o)); h+=line('TOTAL',T,'tot')+'</tbody>';
+  setTimeout(()=>$('tKon').querySelectorAll('tr.clk').forEach(tr=>tr.onclick=()=>bukaKontrak(tr.dataset.unit)),0);
   $('tKon').innerHTML=rows.length?h:'<tbody><tr><td class="empty">Tidak ada data kontrak</td></tr></tbody>';
 }
 
@@ -514,8 +530,8 @@ function conn(){
   return {url:(u||'').trim(),key:(k||'').trim()};
 }
 /* ambil data: coba fetch (CORS) dulu, bila gagal pakai JSONP */
-async function ambil(url,key){
-  const q=(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+'&t='+Date.now();
+async function ambil(url,key,extra=''){
+  const q=(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+extra+'&t='+Date.now();
   try{
     const r=await fetch(url+q,{redirect:'follow'}); const t=await r.text(); let j;
     try{ j=JSON.parse(t); }catch(e){
@@ -527,17 +543,17 @@ async function ambil(url,key){
     if(!j.ok) throw new Error(j.error||'Respon tidak valid'); return j.data;
   }catch(e){
     if(e && /Web App|Kunci|Respon/.test(e.message)) throw e;
-    return jsonp(url,key);   // fallback
+    return jsonp(url,key,extra);   // fallback
   }
 }
-function jsonp(url,key){
+function jsonp(url,key,extra=''){
   return new Promise((res,rej)=>{
     const cb='__cb'+Date.now(), sc=document.createElement('script'); let done=false;
     const end=()=>{delete window[cb]; sc.remove()};
     window[cb]=r=>{done=true;end(); r&&r.ok?res(r.data):rej(new Error(r&&r.error||'Respon tidak valid'))};
     sc.onerror=()=>{if(!done){end();rej(new Error('Tidak dapat terhubung ke Web App. Kemungkinan: (1) Code.gs di Apps Script belum versi terbaru, atau (2) akses Deploy belum "Anyone". Cek dengan membuka URL Web App + ?api=1&key=KUNCI di browser.'))}};
     setTimeout(()=>{if(!done){end();rej(new Error('Waktu habis saat menghubungi Google Sheet.'))}},60000);
-    sc.src=url+(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+'&callback='+cb+'&t='+Date.now();
+    sc.src=url+(url.includes('?')?'&':'?')+'api=1&key='+encodeURIComponent(key)+extra+'&callback='+cb+'&t='+Date.now();
     document.body.appendChild(sc);
   });
 }
@@ -554,6 +570,47 @@ function loadData(){
 
 function toast(msg){const t=document.createElement('div');t.textContent=msg;Object.assign(t.style,{position:'fixed',right:'16px',bottom:'16px',background:css('--ref'),color:css('--surface'),padding:'10px 14px',borderRadius:'8px',fontSize:'12px',zIndex:60,maxWidth:'360px'});document.body.appendChild(t);setTimeout(()=>t.remove(),4000)}
 
+
+/* ---------- daftar kontrak per unit ---------- */
+const K={data:null,f:'all',q:''};
+function bukaKontrak(unit){
+  $('kModal').style.display='grid'; $('kTitle').textContent='Daftar Kontrak · '+shortUnit(unit)+(S.kon==='Semua'?'':' · '+S.kon);
+  $('kMini').innerHTML=''; $('kTbl').innerHTML='<tbody><tr><td class="empty">Memuat daftar kontrak…</td></tr></tbody>'; K.data=null;
+  const ok=d=>{K.data=d; renderKontrak()}, fail=e=>{$('kTbl').innerHTML='<tbody><tr><td class="empty">'+esc(e&&e.message||e)+'</td></tr></tbody>'};
+  if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getKontrakUnit(unit,S.kon); return; }
+  const c=conn(); if(!c.url||!c.key||/TEMPEL_URL/.test(c.url)){ fail('Daftar kontrak hanya tersedia saat dashboard terhubung ke Google Sheet.'); return; }
+  ambil(c.url,c.key,'&unit='+encodeURIComponent(unit)+'&status='+encodeURIComponent(S.kon)).then(ok,fail);
+}
+function kRows(){
+  const d=K.data; if(!d) return [];
+  let r = K.f==='lain' ? d.lain.map(x=>({...x,nilai:null,sisa:null,ket:x.jenis})) : d.kontrak.filter(x=>K.f==='open'?x.ket!=='Lunas':K.f==='late'?x.lewat:true);
+  const q=K.q.trim().toLowerCase(); if(q) r=r.filter(x=>(x.no+' '+x.uraian+' '+x.vendor+' '+(x.prk||'')).toLowerCase().includes(q));
+  return r.sort((a,b)=>(b.sisa??b.bayar)-(a.sisa??a.bayar));
+}
+function renderKontrak(){
+  const d=K.data; if(!d) return;
+  const all=d.kontrak, nil=sum(all,x=>x.nilai), by=sum(all,x=>x.bayar), late=all.filter(x=>x.lewat), lain=sum(d.lain,x=>x.bayar);
+  $('kMini').innerHTML=`<div><span>Kontrak</span><b class="num">${all.length} · ${RpM(nil)}</b></div><div><span>Terbayar kontrak</span><b class="num">${RpM(by)} (${pct(P(by,nil))})</b></div><div><span>Lewat batas, belum lunas</span><b class="num" style="color:var(--bad)">${late.length} · ${RpM(sum(late,x=>x.sisa))}</b></div><div><span>Pajak &amp; di luar daftar</span><b class="num">${RpM(lain)}</b></div>`;
+  const rows=kRows(), isL=K.f==='lain', rp=v=>v==null?'–':new Intl.NumberFormat('id-ID').format(Math.round(v));
+  const pill=x=>isL?`<span class="pill mut">${esc(x.ket)}</span>`:`<span class="pill ${x.ket==='Lunas'?'good':x.ket==='Sebagian'?'warn':'mut'}">${x.ket}</span>${x.lewat?'<br><span class="pill bad" style="margin-top:3px">Lewat batas</span>':''}`;
+  let h=`<thead><tr><th style="text-align:left">No. Kontrak</th><th style="text-align:left">Pekerjaan</th><th style="text-align:left">Vendor</th>${isL?'':'<th style="text-align:left">Status</th><th>Tgl Batas</th><th>Nilai Kontrak (Rp)</th>'}<th>Terbayar (Rp)</th>${isL?'':'<th>%</th><th>Sisa (Rp)</th>'}<th style="text-align:left">Keterangan</th></tr></thead><tbody>`;
+  rows.forEach(x=>{h+=`<tr><td style="text-align:left">${esc(x.no)}</td><td class="wrap">${esc(x.uraian)}</td><td style="text-align:left;white-space:normal;max-width:220px">${esc(x.vendor)}</td>${isL?'':`<td style="text-align:left">${esc(x.status)}</td><td>${esc(x.batas||'–')}</td><td>${rp(x.nilai)}</td>`}<td>${rp(x.bayar)}</td>${isL?'':`<td>${x.nilai?pct(P(x.bayar,x.nilai)):'–'}</td><td>${rp(x.sisa)}</td>`}<td style="text-align:left;white-space:normal;min-width:112px">${pill(x)}</td></tr>`});
+  h+=`<tr class="tot"><td>TOTAL (${rows.length})</td><td></td><td></td>${isL?'':`<td></td><td></td><td>${rp(sum(rows,x=>x.nilai||0))}</td>`}<td>${rp(sum(rows,x=>x.bayar))}</td>${isL?'':`<td></td><td>${rp(sum(rows,x=>x.sisa||0))}</td>`}<td></td></tr></tbody>`;
+  $('kTbl').innerHTML=rows.length?h:'<tbody><tr><td class="empty">Tidak ada data</td></tr></tbody>';
+}
+function kCsv(){
+  const rows=kRows(); if(!rows.length) return;
+  const cols=[['No Kontrak','no'],['Pekerjaan','uraian'],['Vendor','vendor'],['PRK','prk'],['Status','status'],['Tgl Batas','batas'],['Nilai Kontrak','nilai'],['Terbayar','bayar'],['Sisa','sisa'],['Keterangan','ket'],['Lewat Batas','lewat']];
+  const q=v=>{v=v==null?'':String(v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='﻿'+[cols.map(c=>c[0]).join(';')].concat(rows.map(r=>cols.map(c=>q(c[1]==='lewat'?(r.lewat?'Ya':''):r[c[1]])).join(';'))).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Kontrak_'+(K.data.unit||'unit').replace(/\W+/g,'_')+'.csv'; a.click();
+}
+$('kClose').onclick=()=>$('kModal').style.display='none';
+$('kModal').onclick=e=>{if(e.target.id==='kModal')$('kModal').style.display='none'};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('kModal').style.display='none'});
+$('kCari').oninput=e=>{K.q=e.target.value;renderKontrak()};
+$('kCsv').onclick=kCsv;
+$('segKf').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('segKf').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));K.f=b.dataset.v;renderKontrak()});
 window.addEventListener('hashchange',()=>{ if(/[#&]k=/.test(location.hash)) loadData(); });
 loadData();
 </script>
