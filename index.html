@@ -127,11 +127,15 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
 .c8{grid-column:span 8}
 .mini5{grid-template-columns:repeat(5,1fr)}
 .clk{cursor:pointer}.clk:hover td{background:color-mix(in srgb,var(--bayar) 10%,var(--surface))!important}.chev{display:inline-block;width:14px;color:var(--bayar);font-weight:700}
-#kModal{position:fixed;inset:0;display:none;place-items:center;background:rgba(10,20,40,.55);z-index:90;padding:16px}
-#kModal .box{background:var(--surface);border-radius:12px;width:min(1280px,100%);max-height:92vh;display:flex;flex-direction:column;padding:16px 18px;gap:10px}
-#kModal .tbl td.wrap{white-space:normal;min-width:240px;max-width:420px;text-align:left}
+#kModal,#tModal{position:fixed;inset:0;display:none;place-items:center;background:rgba(10,20,40,.55);z-index:90;padding:16px}
+#kModal .box,#tModal .box{background:var(--surface);border-radius:12px;width:min(1280px,100%);max-height:92vh;display:flex;flex-direction:column;padding:16px 18px;gap:10px}
+#kModal .tbl td.wrap,#tModal .tbl td.wrap{white-space:normal;min-width:240px;max-width:420px;text-align:left}
 .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700}
 .pill.good{background:var(--good-bg);color:var(--good)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}.pill.mut{background:var(--surface-2);color:var(--text-2)}
+.lnk{border:1px solid var(--border);background:var(--surface-2);color:var(--bayar);font:600 12px inherit;border-radius:6px;height:28px;padding:0 10px;cursor:pointer;white-space:nowrap}.lnk:hover{background:var(--bayar);color:#fff;border-color:var(--bayar)}
+.stages .row.go{cursor:pointer;border-radius:6px;padding:2px 4px;margin:-2px -4px}.stages .row.go:hover{background:var(--surface-2)}
+@media (max-width:760px){#tModal{padding:8px}#tModal .box{max-height:96vh;overflow:auto;padding:12px}#tModal .box>.scroll{min-height:320px!important;flex:none}#tModal input,#tModal select{min-width:0!important;flex:1 1 45%}}
+#tModal select{height:30px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:12px;padding:0 6px;max-width:220px}
 .empty{padding:30px;text-align:center;color:var(--muted)}
 @media (max-width:1180px){.s84,.s57,.s444,.s66{grid-template-columns:1fr}.c6,.c4,.c8{grid-column:span 12}.scroll{max-height:420px}}
 @media (max-width:760px){
@@ -215,7 +219,7 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
 
   <!-- 5. Komitmen -->
   <section class="card c12">
-    <h2><span><span class="no">5</span>Komitmen Rencana Bayar vs Realisasi</span><select id="fKomBln" aria-label="Bulan komitmen" style="height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:12px;padding:0 6px"></select></h2>
+    <h2><span><span class="no">5</span>Komitmen Rencana Bayar vs Realisasi</span><span style="display:flex;gap:8px;align-items:center"><button class="lnk" id="btnTag" type="button" title="Lihat daftar tagihan bulan ini">📄 Lihat data tagihan</button><select id="fKomBln" aria-label="Bulan komitmen" style="height:28px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font:inherit;font-size:12px;padding:0 6px"></select></span></h2>
     <div class="mini" id="komMini"></div>
     <div class="split s444">
       <div class="pane"><h3>Per unit / bidang</h3>
@@ -254,6 +258,15 @@ footer{grid-column:span 12;font-size:11px;color:var(--muted);display:flex;flex-w
     <button class="btn" id="kClose" style="background:var(--ref);color:#fff" aria-label="Tutup">✕ Tutup</button></div></div>
   <div class="mini" id="kMini" style="margin:0"></div>
   <div class="scroll" style="flex:1;min-height:200px"><table class="tbl num" id="kTbl"></table></div>
+</div></div>
+<div id="tModal" role="dialog" aria-modal="true" aria-labelledby="tTitle"><div class="box">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="tTitle" style="margin:0;font-size:16px">Data Tagihan</h2><button class="btn" id="tClose" style="background:var(--ref);color:#fff;flex:none" aria-label="Tutup">✕ Tutup</button></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="seg" id="segTf"><button class="on" data-v="all">Semua</button><button data-v="open">Belum lunas</button><button data-v="paid">Sudah terbayar</button></span>
+    <select id="tUnit" aria-label="Unit"></select><select id="tTahap" aria-label="Tahapan VIP"></select><select id="tMg" aria-label="Minggu"></select>
+    <input id="tCari" placeholder="Cari no. kontrak / pekerjaan / vendor / PRK…" style="height:30px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:0 10px;font:inherit;font-size:12px;min-width:220px">
+    <button class="btn" id="tCsv" style="background:var(--surface-2);color:var(--text);border-color:var(--border)">⤓ CSV</button></div>
+  <div class="mini" id="tMini" style="margin:0"></div>
+  <div class="scroll" style="flex:1;min-height:200px"><table class="tbl num" id="tTbl"></table></div>
 </div></div>
 <div class="tip" id="tip"></div>
 
@@ -440,12 +453,15 @@ function renderKom(){
   const ko=css('--komit'), by=css('--bayar');
   const opt=(lab,horiz)=>({indexAxis:horiz?'y':'x',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${RpM(c.raw)}`,afterBody:it=>{const o=lab[it[0].dataIndex];return 'Capaian: '+pct(P(o.re,o.rb))}}}},
      scales:{[horiz?'x':'y']:{beginAtZero:true,ticks:{callback:tickM}},[horiz?'y':'x']:{grid:{display:false}}}});
-  mk('cKom','bar',{labels:arr.map(a=>shortUnit(a[0])),datasets:[{label:'Komitmen',data:arr.map(a=>a[1].rb),backgroundColor:ko,borderRadius:4,maxBarThickness:12},{label:'Realisasi',data:arr.map(a=>a[1].re),backgroundColor:by,borderRadius:4,maxBarThickness:12}]},opt(arr.map(a=>a[1]),true));
+  const optK=opt(arr.map(a=>a[1]),true); optK.onClick=(e,el)=>{if(el&&el.length) bukaTagihan({unit:arr[el[0].index][0]})}; optK.onHover=(e,el)=>{e.native.target.style.cursor=el&&el.length?'pointer':'default'};
+  mk('cKom','bar',{labels:arr.map(a=>shortUnit(a[0])),datasets:[{label:'Komitmen',data:arr.map(a=>a[1].rb),backgroundColor:ko,borderRadius:4,maxBarThickness:12},{label:'Realisasi',data:arr.map(a=>a[1].re),backgroundColor:by,borderRadius:4,maxBarThickness:12}]},optK);
   const wk=[1,2,3,4,5].map(w=>{const a=rows.filter(k=>+k.minggu===w);return {w,rb:sum(a,k=>k.rencana),re:sum(a,k=>k.realisasi)}}).filter(x=>x.rb>0||x.re>0);
-  mk('cWeek','bar',{labels:wk.map(w=>'Minggu '+w.w),datasets:[{label:'Komitmen',data:wk.map(w=>w.rb),backgroundColor:ko,borderRadius:4,maxBarThickness:26},{label:'Realisasi',data:wk.map(w=>w.re),backgroundColor:by,borderRadius:4,maxBarThickness:26}]},opt(wk,false));
+  const optW=opt(wk,false); optW.onClick=(e,el)=>{if(el&&el.length) bukaTagihan({minggu:wk[el[0].index].w})}; optW.onHover=(e,el)=>{e.native.target.style.cursor=el&&el.length?'pointer':'default'};
+  mk('cWeek','bar',{labels:wk.map(w=>'Minggu '+w.w),datasets:[{label:'Komitmen',data:wk.map(w=>w.rb),backgroundColor:ko,borderRadius:4,maxBarThickness:26},{label:'Realisasi',data:wk.map(w=>w.re),backgroundColor:by,borderRadius:4,maxBarThickness:26}]},optW);
   const st=new Map(); rows.forEach(k=>{const s=(+k.rencana||0)-(+k.realisasi||0); if(s>1) st.set(k.tahap,(st.get(k.tahap)||0)+s)});
   const sa=[...st.entries()].sort((a,b)=>b[1]-a[1]); const mx=Math.max(...sa.map(s=>s[1]),1);
-  $('stages').innerHTML=sa.length?sa.map(([k,v])=>`<div class="row"><div><div style="margin-bottom:3px">${esc(k)}</div><div class="bar"><div class="p" style="width:${v/mx*100}%"></div></div></div><span style="text-align:right" class="num"><b>${RpM(v)}</b></span></div>`).join(''):'<div class="empty">Seluruh komitmen telah terbayar</div>';
+  $('stages').innerHTML=sa.length?sa.map(([k,v])=>`<div class="row go" data-tahap="${esc(k)}" title="Klik untuk melihat tagihannya"><div><div style="margin-bottom:3px">${esc(k)}</div><div class="bar"><div class="p" style="width:${v/mx*100}%"></div></div></div><span style="text-align:right" class="num"><b>${RpM(v)}</b></span></div>`).join(''):'<div class="empty">Seluruh komitmen telah terbayar</div>';
+  $('stages').querySelectorAll('.row.go').forEach(r=>r.onclick=()=>bukaTagihan({tahap:r.dataset.tahap,f:'open'}));
 }
 
 /* ---------- 6. Kontrak ---------- */
@@ -561,7 +577,7 @@ function jsonp(url,key,extra=''){
 }
 function loadData(){
   const L=$('loading'); L.style.display='grid'; L.innerHTML='Memuat data dari Google Sheet…';
-  const ok=(D,src)=>{SYNC={src:src||'Google Sheets (online)',t:new Date()}; DATA=D; S.bulan=+D.meta.bulan||S.bulan; S.komBln=null; fillControls(); renderAll(); L.style.display='none';
+  const ok=(D,src)=>{TG.cache={}; SYNC={src:src||'Google Sheets (online)',t:new Date()}; DATA=D; S.bulan=+D.meta.bulan||S.bulan; S.komBln=null; fillControls(); renderAll(); L.style.display='none';
     const w=(D.meta.peringatan||[]); $('warn').style.display=w.length?'block':'none'; $('warn').textContent=w.join(' · ')};
   const fail=e=>{L.innerHTML='<div class="card" style="max-width:440px;text-align:left"><b>Gagal memuat data</b><div style="margin:6px 0 12px;color:var(--text-2)">'+esc(e&&e.message||e)+'</div>'+'</div>'};
   if(inGAS){ google.script.run.withSuccessHandler(d=>ok(d)).withFailureHandler(fail).getData(); return; }
@@ -607,6 +623,62 @@ function kCsv(){
   const csv='﻿'+[cols.map(c=>c[0]).join(';')].concat(rows.map(r=>cols.map(c=>q(c[1]==='lewat'?(r.lewat?'Ya':''):r[c[1]])).join(';'))).join('\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Kontrak_'+(K.data.unit||'unit').replace(/\W+/g,'_')+'.csv'; a.click();
 }
+
+/* ---------- data tagihan komitmen (tombol "Lihat data tagihan") ---------- */
+const TG={cache:{},bulan:null,f:'all',unit:'',tahap:'',mg:'',q:''};
+function bukaTagihan(pre={}){
+  const b=S.komBln; if(!b) return;
+  TG.bulan=b; TG.f=pre.f||'all'; TG.unit=pre.unit||(S.unit!=='Semua'?S.unit:''); TG.tahap=pre.tahap||''; TG.mg=pre.minggu?String(pre.minggu):''; TG.q=''; $('tCari').value='';
+  $('segTf').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x.dataset.v===TG.f));
+  $('tModal').style.display='grid'; $('tTitle').textContent='Data Tagihan · '+BULF[b-1]+(S.status==='Semua'?'':' · '+S.status);
+  const ok=d=>{TG.cache[b]=d; isiFilterTagihan(); renderTagihan()}, fail=e=>{$('tMini').innerHTML='';$('tTbl').innerHTML='<tbody><tr><td class="empty">'+esc(e&&e.message||e)+'</td></tr></tbody>'};
+  if(TG.cache[b]){ isiFilterTagihan(); renderTagihan(); return; }
+  $('tMini').innerHTML=''; $('tTbl').innerHTML='<tbody><tr><td class="empty">Memuat data tagihan…</td></tr></tbody>';
+  if(inGAS){ google.script.run.withSuccessHandler(ok).withFailureHandler(fail).getTagihan(b); return; }
+  if(window.__TEST_TAGIHAN__){ ok(window.__TEST_TAGIHAN__); return; }
+  const c=conn(); if(!c.url||/TEMPEL_URL/.test(c.url)){ fail('Data tagihan hanya tersedia saat dashboard terhubung ke Google Sheet.'); return; }
+  ambil(c.url,c.key,'&tagihan='+b).then(ok,e=>fail(/tidak dikenali|halaman/.test(e&&e.message||'')?'Code.gs di Apps Script belum versi terbaru (fitur data tagihan). Pasang Code.gs terbaru lalu Deploy versi baru.':e));
+}
+const unEnt=v=>String(v??'').replace(/&amp;/g,'&');
+function tgBase(){const d=TG.cache[TG.bulan];return d?d.tagihan.filter(x=>inStatus(x.status)).map(x=>({...x,nama:unEnt(x.nama),vendor:unEnt(x.vendor),vip:/^0?$/.test(String(x.vip||'').trim())?'':x.vip})):[]}
+function isiFilterTagihan(){
+  const all=tgBase(), opt=(arr,cur,lab)=>`<option value="">${lab}</option>`+arr.map(v=>`<option value="${esc(v)}" ${String(v)===String(cur)?'selected':''}>${esc(lab==='Semua minggu'?'Minggu '+v:lab==='Semua unit'?shortUnit(v):v)}</option>`).join('');
+  $('tUnit').innerHTML=opt([...new Set(all.map(x=>x.unit))].sort(),TG.unit,'Semua unit');
+  $('tTahap').innerHTML=opt([...new Set(all.map(x=>x.tahap))].sort(),TG.tahap,'Semua tahapan VIP');
+  $('tMg').innerHTML=opt([...new Set(all.map(x=>x.minggu).filter(Boolean))].sort((a,b)=>a-b),TG.mg,'Semua minggu');
+}
+function tgRows(){
+  let r=tgBase().filter(x=>(!TG.unit||x.unit===TG.unit)&&(!TG.tahap||x.tahap===TG.tahap)&&(!TG.mg||String(x.minggu)===TG.mg)&&(TG.f==='all'||(TG.f==='open'?x.sisa>1:x.realisasi>0)));
+  const q=TG.q.trim().toLowerCase(); if(q) r=r.filter(x=>(x.no+' '+x.nama+' '+x.vendor+' '+x.prk+' '+x.vip).toLowerCase().includes(q));
+  return r.sort((a,b)=>b.sisa-a.sisa||b.tagihan-a.tagihan);
+}
+function renderTagihan(){
+  const rows=tgRows(), tg=sum(rows,x=>x.tagihan), re=sum(rows,x=>x.realisasi), si=sum(rows,x=>x.sisa), rp=v=>new Intl.NumberFormat('id-ID').format(Math.round(v||0));
+  $('tMini').innerHTML=`<div><span>Jumlah tagihan</span><b class="num">${rows.length}</b></div><div><span>Nilai tagihan</span><b class="num">${RpM(tg)}</b></div><div><span>Realisasi</span><b class="num">${RpM(re)} (${pct(P(re,tg))})</b></div><div><span>Belum terbayar</span><b class="num" style="color:var(--bad)">${RpM(si)}</b></div>`;
+  const pill=x=>x.tahap==='Pembayaran Lunas'?'good':x.tahap==='PRK AKI tidak cukup'||/Ditolak/.test(x.tahap)?'bad':x.tahap==='Belum Input VIP'?'mut':'warn';
+  let h=`<thead><tr><th style="text-align:left">No. Kontrak</th><th style="text-align:left">Pekerjaan</th><th style="text-align:left">Vendor</th><th style="text-align:left">Unit</th><th style="text-align:left">PRK</th><th>Mg</th><th>Nilai Tagihan (Rp)</th><th>Realisasi (Rp)</th><th>Belum Terbayar (Rp)</th><th style="text-align:left">Status VIP</th><th style="text-align:left">Kategori</th></tr></thead><tbody>`;
+  rows.forEach(x=>{h+=`<tr><td style="text-align:left">${esc(x.no)}${x.vip?`<small class="ur" style="display:block;color:var(--muted);font-size:10.5px">${esc(x.vip)}</small>`:''}</td><td class="wrap">${esc(x.nama)}</td><td style="text-align:left;white-space:normal;max-width:200px">${esc(x.vendor)}</td><td style="text-align:left">${esc(shortUnit(x.unit))}</td><td style="text-align:left">${esc(x.prk)}</td><td>${x.minggu||'–'}</td><td>${rp(x.tagihan)}</td><td>${x.realisasi?rp(x.realisasi):'–'}</td><td>${x.sisa>1?rp(x.sisa):'–'}</td><td style="text-align:left;white-space:normal;min-width:130px"><span class="pill ${pill(x)}">${esc(x.tahap)}</span></td><td style="text-align:left;white-space:normal;min-width:120px" title="${esc(x.ket)}">${esc(x.kategori)}</td></tr>`});
+  h+=`<tr class="tot"><td>TOTAL (${rows.length})</td><td></td><td></td><td></td><td></td><td></td><td>${rp(tg)}</td><td>${rp(re)}</td><td>${rp(si)}</td><td></td><td></td></tr></tbody>`;
+  $('tTbl').innerHTML=rows.length?h:'<tbody><tr><td class="empty">Tidak ada tagihan pada pilihan ini</td></tr></tbody>';
+}
+function tCsv(){
+  const rows=tgRows(); if(!rows.length) return;
+  const cols=[['No Kontrak','no'],['Pekerjaan','nama'],['Vendor','vendor'],['Unit','unit'],['No PRK','prk'],['Status','status'],['Minggu','minggu'],['Nilai Tagihan','tagihan'],['Realisasi','realisasi'],['Belum Terbayar','sisa'],['No VIP','vip'],['Status VIP','tahap'],['Kategori','kategori'],['Keterangan','ket']];
+  const q=v=>{v=v==null?'':String(v);return /[";\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const csv='﻿'+[cols.map(c=>c[0]).join(';')].concat(rows.map(r=>cols.map(c=>q(r[c[1]])).join(';'))).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='Tagihan_'+BULF[TG.bulan-1]+'.csv'; a.click();
+}
+$('btnTag').onclick=()=>bukaTagihan();
+$('tClose').onclick=()=>$('tModal').style.display='none';
+$('tModal').onclick=e=>{if(e.target.id==='tModal')$('tModal').style.display='none'};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('tModal').style.display='none'});
+$('tCari').oninput=e=>{TG.q=e.target.value;renderTagihan()};
+$('tUnit').onchange=e=>{TG.unit=e.target.value;renderTagihan()};
+$('tTahap').onchange=e=>{TG.tahap=e.target.value;renderTagihan()};
+$('tMg').onchange=e=>{TG.mg=e.target.value;renderTagihan()};
+$('tCsv').onclick=tCsv;
+$('segTf').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('segTf').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));TG.f=b.dataset.v;renderTagihan()});
+
 $('kClose').onclick=()=>$('kModal').style.display='none';
 $('kModal').onclick=e=>{if(e.target.id==='kModal')$('kModal').style.display='none'};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('kModal').style.display='none'});
